@@ -1,0 +1,36 @@
+# Ignore environment variable files
+.env
+
+# Ignore Sqitch log files
+sqitch.log
+
+# Ignore temporary files and directories
+*.tmp
+*.temp
+*.swp
+*.bak
+*.old
+*.orig
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore editor/IDE-specific files
+.idea/
+.vscode/
+*.iml
+
+# Ignore Python virtual environment (if used)
+venv/
+__pycache__/
+
+# Ignore Node.js dependencies (if used)
+node_modules/
+
+# Ignore build/output directories
+build/
+dist/
+
+# Ignore any sensitive or generated files in the Sqitch directory
+sqitch.conf.bak
