@@ -1,3 +1,4 @@
 %syntax-version=1.0.0
 %project=fastsvelte
 
+001_create_schema 2025-06-29T19:59:42Z Harun Zafer <harunzafer.dev@gmail.com> # Add schema for all fastsvelte objects
