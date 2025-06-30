@@ -1,0 +1,8 @@
+.git*
+**/*.pyc
+.venv/
+Dockerfile
+.dockerignore
+requirements.in
+requirements.dev.*
+doc/

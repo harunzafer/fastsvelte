@@ -1,0 +1,3 @@
+dependency-injector
+fastapi[standard]
+pydantic_settings

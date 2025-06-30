@@ -10,6 +10,17 @@ services:
       - "5432:5432"
     volumes:
       - fastsvelte-data:/var/lib/postgresql/data
+    
+  api:
+    build:
+      context: ./backend
+    container_name: fastsvelte-api
+    ports:
+      - "8000:3100"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/fastsvelte
 
 volumes:
   fastsvelte-data:
