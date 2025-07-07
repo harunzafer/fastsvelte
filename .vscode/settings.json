@@ -1,0 +1,20 @@
+{
+    // disable pylint
+    "pylint.enabled": false,
+    // Specify Ruff as the default formatter for Python
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true,
+        "editor.formatOnSaveMode": "modifications",
+    },
+    "files.exclude": {
+        "**/node_modules/**": true,
+        "**/__pycache__": true,
+        "**/.pytest_cache/**": true,
+        "**/.mypy_cache/**": true,
+        "**/.venv/**": true,
+        "**/dist/**": true,
+        "**/build/**": true,
+        "**/.svelte-kit/**": true
+    }
+}

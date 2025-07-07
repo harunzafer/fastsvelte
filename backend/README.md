@@ -88,6 +88,10 @@ Notice that, pip-compile doesn't addd itself or `pip-tools` to the requirements.
 
 Now we can add new dependencies to the requirements.in file and run `pip-compile` again to generate the requirements.txt file.
 
+Use requirements.dev.in and requirements.dev.txt for development dependencies. Use requirements.txt for production dependencies (i.e. in the Dockerfile).
+
+```bash
+
 
 ## Running Locally
 
