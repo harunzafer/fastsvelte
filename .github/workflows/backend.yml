@@ -1,0 +1,40 @@
+name: Backend CI
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+  pull_request:
+    paths:
+      - 'backend/**'
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.dev.txt
+
+      - name: Ruff (lint + format check)
+        run: |
+          echo "🔍 Running Ruff..."
+          ruff backend/ --output-format=github
+        continue-on-error: false
+
+      - name: Print fix instructions on failure
+        if: failure()
+        run: |
+          echo "❌ Ruff found issues. To fix locally, run:"
+          echo ""
+          echo "    ruff backend/ --fix"
+          echo ""
+          echo "Then re-commit the changes and push again."

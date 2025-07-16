@@ -1,0 +1,41 @@
+name: Frontend CI
+
+on:
+  push:
+    paths:
+      - 'frontend/**'
+  pull_request:
+    paths:
+      - 'frontend/**'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run Prettier check
+        run: |
+          echo "🔍 Running Prettier..."
+          cd frontend
+          npx prettier . --check
+        continue-on-error: false
+
+      - name: Print fix instructions on failure
+        if: failure()
+        run: |
+          echo "❌ Prettier found formatting issues. To fix locally, run:"
+          echo ""
+          echo "    cd frontend && npx prettier . --write"
+          echo ""
+          echo "Then re-commit the changes and push again."
