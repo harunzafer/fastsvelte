@@ -16,9 +16,13 @@ class Settings(BaseSettings):
         FS_DB_URL -> settings.db_url
     """
 
-    app_name: str = "BrokerGuard"
+    app_name: str = "My Super SAAS App"
+    app_description: str = (
+        "helps professionals like you work more efficiently with modern tools."
+    )
     environment: str = "dev"
     db_url: str
+    base_web_url: str = "http://localhost:5173"
     session_cookie_name: str = "session_id"
     session_cookie_max_age: int = 60 * 60 * 24  # 1 day
     session_refresh_threshold: int = int(session_cookie_max_age * 0.5)

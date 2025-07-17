@@ -104,3 +104,28 @@ class UserRepo(BaseRepo):
         """
         row = await self.fetch_one(query, email)
         return User(**row) if row else None
+
+    async def update_user_name(
+        self, user_id: int, first_name: str | None, last_name: str | None
+    ) -> None:
+        updates = []
+        params = [user_id]
+
+        if first_name is not None:
+            updates.append("first_name = $" + str(len(params) + 1))
+            params.append(first_name)
+
+        if last_name is not None:
+            updates.append("last_name = $" + str(len(params) + 1))
+            params.append(last_name)
+
+        if not updates:
+            return  # nothing to update
+
+        updates.append("updated_at = now()")
+        query = f"""
+            UPDATE fastsvelte."user"
+            SET {", ".join(updates)}
+            WHERE id = $1 AND deleted_at IS NULL
+        """
+        await self.execute(query, *params)
