@@ -1,4 +1,5 @@
 import datetime
+
 from app.data.repo.base_repo import BaseRepo
 from app.model.session_model import Session
 
@@ -32,11 +33,16 @@ class SessionRepo(BaseRepo):
         """
         await self.execute(query, new_expiration, session_id)
 
-    async def delete_session(self, session_id: str) -> Session | None:
+    async def delete_session(self, session_id: str) -> None:
         query = """
         DELETE FROM fastsvelte.session
-        WHERE id = $1
-        RETURNING id, user_id, expires_at, context
+        WHERE id = $1        
         """
-        record = await self.fetch_one(query, session_id)
-        return Session(**record) if record else None
+        await self.execute(query, session_id)
+
+    async def delete_sessions_by_user_id(self, user_id: int) -> None:
+        query = """
+        DELETE FROM fastsvelte.session
+        WHERE user_id = $1
+        """
+        await self.execute(query, user_id)

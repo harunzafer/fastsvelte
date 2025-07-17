@@ -125,3 +125,17 @@ class AuthService:
             return None
 
         return User(**user_with_pw.model_dump())
+
+    async def invalidate_session(self, session_id: str) -> None:
+        await self.session_repo.delete_session(session_id)
+        # if session:
+        #     await self.session_audit_service.log_event(
+        #         session_id=session.id, user_id=session.user_id, event="logout"
+        #     )
+
+    async def invalidate_all_sessions(self, user_id: int) -> None:
+        await self.session_repo.delete_sessions_by_user_id(user_id)
+        # for session in sessions:
+        #     await self.session_audit_service.log_event(
+        #         session_id=session.id, user_id=user_id, event="logout_all"
+        #     )
