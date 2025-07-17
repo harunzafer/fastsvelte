@@ -75,10 +75,3 @@ class UpdateUserRequest(BaseModel):
                 setattr(self, field_name, value)
 
         return self
-
-
-# should we keep this here or move to a separate file?
-class ChangePasswordRequest(BaseModel):
-    current_password: str
-    new_password: str
-
