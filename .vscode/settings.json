@@ -6,6 +6,9 @@
         "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.formatOnSave": true,
         "editor.formatOnSaveMode": "modifications",
+         "editor.codeActionsOnSave": {
+             "source.organizeImports": "always"
+        }
     },
     "files.exclude": {
         "**/node_modules/**": true,

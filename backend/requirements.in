@@ -1,3 +1,4 @@
+argon2-cffi
 asyncpg
 dependency-injector
 fastapi[standard]

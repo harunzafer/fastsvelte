@@ -11,6 +11,10 @@ anyio==4.9.0
     #   httpx
     #   starlette
     #   watchfiles
+argon2-cffi==25.1.0
+    # via -r requirements.dev.in
+argon2-cffi-bindings==21.2.0
+    # via argon2-cffi
 asyncpg==0.30.0
     # via -r requirements.dev.in
 certifi==2025.6.15
@@ -18,6 +22,8 @@ certifi==2025.6.15
     #   httpcore
     #   httpx
     #   sentry-sdk
+cffi==1.17.1
+    # via argon2-cffi-bindings
 click==8.2.1
     # via
     #   rich-toolkit
@@ -62,6 +68,8 @@ markupsafe==3.0.2
     # via jinja2
 mdurl==0.1.2
     # via markdown-it-py
+pycparser==2.22
+    # via cffi
 pydantic[email]==2.11.7
     # via
     #   fastapi
@@ -91,6 +99,8 @@ rich-toolkit==0.14.8
     #   fastapi-cloud-cli
 rignore==0.5.1
     # via fastapi-cloud-cli
+ruff==0.12.4
+    # via -r requirements.dev.in
 sentry-sdk==2.32.0
     # via fastapi-cloud-cli
 shellingham==1.5.4
