@@ -3,7 +3,7 @@ from typing import Optional
 
 from app.model.role_model import Role
 from app.model.session_model import Session
-from pydantic import BaseModel, EmailStr, model_validator, root_validator
+from pydantic import BaseModel, EmailStr, model_validator
 
 
 class User(BaseModel):

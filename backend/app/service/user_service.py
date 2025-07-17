@@ -1,5 +1,5 @@
 from app.data.repo.user_repo import UserRepo
-from app.model.user_model import UpdateUserRequest, User
+from app.model.user_model import User
 
 
 class UserService:
