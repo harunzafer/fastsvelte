@@ -22,3 +22,7 @@ def set_session_cookie(response: Response, token: str) -> None:
         max_age=settings.session_cookie_max_age,
         path="/",
     )
+
+
+def clear_session_cookie(response: Response) -> None:
+    response.delete_cookie(key=settings.session_cookie_name, path="/")

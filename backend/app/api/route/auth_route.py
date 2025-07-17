@@ -1,3 +1,4 @@
+from app.api.middleware.auth_handler import get_current_user
 from app.config.container import Container
 from app.config.settings import settings
 from app.model.auth_model import (
@@ -6,9 +7,9 @@ from app.model.auth_model import (
     SignupRequest,
     SignupSuccess,
 )
-from app.model.user_model import User
+from app.model.user_model import CurrentUser, User
 from app.service.auth_service import AuthService
-from app.util.cookie_util import set_session_cookie
+from app.util.cookie_util import clear_session_cookie, set_session_cookie
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Response, status
 from fastapi.responses import JSONResponse
@@ -51,3 +52,13 @@ async def login(
     set_session_cookie(response, token)
 
     return LoginSuccess(user_id=session.user_id)
+
+@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+@inject
+async def logout(
+    response: Response,
+    user: CurrentUser = Depends(get_current_user),
+    auth_service: AuthService = Depends(Provide[Container.auth_service]),
+):
+    await auth_service.invalidate_session(user.session.id)
+    clear_session_cookie(response)
