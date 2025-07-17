@@ -8,3 +8,8 @@ class UserService:
 
     async def list_users(self) -> list[User]:
         return await self.user_repo.list_users()
+
+    async def update_user_info(
+        self, user_id: int, first_name: str | None, last_name: str | None
+    ) -> None:
+        await self.user_repo.update_user_name(user_id, first_name, last_name)
