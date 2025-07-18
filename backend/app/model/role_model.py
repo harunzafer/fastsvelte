@@ -55,11 +55,11 @@ class Role(BaseModel):
 Role.READONLY = Role(name="readonly", precedence=0)
 Role.MEMBER = Role(name="member", precedence=1)
 Role.ORG_ADMIN = Role(name="org_admin", precedence=2)
-Role.SYSTEM_ADMIN = Role(name="system_admin", precedence=3)
+Role.SYSTEM_ADMIN = Role(name="sys_admin", precedence=3)
 
 Role._all_roles = {
     "readonly": Role.READONLY,
     "member": Role.MEMBER,
     "org_admin": Role.ORG_ADMIN,
-    "system_admin": Role.SYSTEM_ADMIN,
+    "sys_admin": Role.SYSTEM_ADMIN,
 }

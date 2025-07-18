@@ -126,8 +126,11 @@ CREATE TABLE IF NOT EXISTS fastsvelte.organization_pricing (
 -- Seed roles
 INSERT INTO fastsvelte.role (name, description)
 VALUES 
-    ('admin', 'Full access to manage users and settings'),
-    ('member', 'Standard user with access to core features')
+    ('sys_admin', 'Full access to manage users and settings across all organizations'),
+    ('org_admin', 'Organization administrator with access to organization settings'),
+    ('member', 'Standard user with access to core features'),
+    ('readonly', 'User with read-only access to notes and settings'),
+    ('cron', 'Cron job user with no UI access')    
 ON CONFLICT (name) DO NOTHING;
 
 -- Seed pricing plans

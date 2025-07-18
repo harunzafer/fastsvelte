@@ -9,6 +9,19 @@ logger = logging.getLogger(__name__)
 
 
 class UserRepo(BaseRepo):
+    async def get_user_by_id(self, user_id: int) -> Optional[User]:
+        query = """
+            SELECT id, email, first_name, last_name,
+                email_verified, email_verified_at,
+                is_active, deleted_at,
+                organization_id, role_id,
+                created_at, updated_at
+            FROM fastsvelte."user"
+            WHERE id = $1 AND deleted_at IS NULL
+        """
+        row = await self.fetch_one(query, user_id)
+        return User(**row) if row else None
+
     async def list_users(self) -> list[User]:
         query = """
             SELECT

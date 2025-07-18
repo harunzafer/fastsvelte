@@ -13,3 +13,6 @@ class UserService:
         self, user_id: int, first_name: str | None, last_name: str | None
     ) -> None:
         await self.user_repo.update_user_name(user_id, first_name, last_name)
+
+    async def get_user_by_id(self, user_id: int) -> User | None:
+        return await self.user_repo.get_user_by_id(user_id)
