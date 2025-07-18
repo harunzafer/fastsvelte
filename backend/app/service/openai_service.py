@@ -1,4 +1,3 @@
-import os
 from typing import Type, TypeVar
 
 from openai import AsyncOpenAI
