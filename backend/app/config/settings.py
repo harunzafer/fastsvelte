@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     session_cookie_name: str = "session_id"
     session_cookie_max_age: int = 60 * 60 * 24  # 1 day
     session_refresh_threshold: int = int(session_cookie_max_age * 0.5)
+    openai_api_key: str = None  # Should be set in .env
 
     model_config = ConfigDict(
         env_file=".env",

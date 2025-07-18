@@ -2,5 +2,6 @@ argon2-cffi
 asyncpg
 dependency-injector
 fastapi[standard]
+openai
 pydantic_settings
 ruff
