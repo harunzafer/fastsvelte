@@ -5,7 +5,6 @@ from app.data.repo.setting_repo import SettingRepo
 from app.data.repo.user_setting_repo import UserSettingRepo
 from app.model.setting_model import (
     OrganizationSetting,
-    SettingDefinition,
     SettingType,
     UserSetting,
 )
