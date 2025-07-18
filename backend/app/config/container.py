@@ -2,14 +2,18 @@ from app.config.settings import settings
 from app.data.db_config import DatabaseConfig
 from app.data.repo.note_repo import NoteRepo
 from app.data.repo.org_repo import OrgRepo
+from app.data.repo.organization_setting_repo import OrganizationSettingRepo
 from app.data.repo.password_repo import PasswordRepo
 from app.data.repo.session_repo import SessionRepo
+from app.data.repo.setting_repo import SettingRepo
 from app.data.repo.user_repo import UserRepo
+from app.data.repo.user_setting_repo import UserSettingRepo
 from app.service.auth_service import AuthService
 from app.service.email_service_stub import StubEmailService
 from app.service.note_service import NoteService
 from app.service.openai_service import OpenAIService
 from app.service.password_service import PasswordService
+from app.service.setting_service import SettingService
 from app.service.summary_service import SummaryService
 from app.service.user_service import UserService
 from dependency_injector import containers, providers
@@ -23,6 +27,27 @@ class Container(containers.DeclarativeContainer):
     session_repo = providers.Singleton(SessionRepo, db_config=db_config)
     password_repo = providers.Singleton(PasswordRepo, db_config=db_config)
     note_repo = providers.Singleton(NoteRepo, db_config=db_config)
+    setting_repo = providers.Factory(
+        SettingRepo,
+        db_config=db_config,
+    )
+
+    user_setting_repo = providers.Factory(
+        UserSettingRepo,
+        db_config=db_config,
+    )
+
+    organization_setting_repo = providers.Factory(
+        OrganizationSettingRepo,
+        db_config=db_config,
+    )
+
+    setting_service = providers.Factory(
+        SettingService,
+        user_setting_repo=user_setting_repo,
+        organization_setting_repo=organization_setting_repo,
+        setting_repo=setting_repo,
+    )
 
     email_service = providers.Singleton(StubEmailService)
     openai_service = providers.Factory(
@@ -64,5 +89,6 @@ class Container(containers.DeclarativeContainer):
             "app.api.route.auth_route",
             "app.api.route.password_route",
             "app.api.route.note_route",
+            "app.api.route.setting_route",
         ]
     )
