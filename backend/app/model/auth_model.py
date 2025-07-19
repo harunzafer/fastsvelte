@@ -23,6 +23,9 @@ class LoginSuccess(BaseModel):
     user_id: int
 
 
-class SignupSession(BaseModel):
+class SignupResult(BaseModel):
     user_id: int
-    token: str
+
+
+class ResendVerificationRequest(BaseModel):
+    email: EmailStr

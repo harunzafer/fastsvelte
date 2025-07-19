@@ -24,12 +24,13 @@ async def forgot_password(
     email, reset_link = await password_service.generate_password_reset_token(
         request.email.strip().lower()
     )
-    background_tasks.add_task(
-        password_service.email_service.send_password_reset_email,
-        email,
-        reset_link,
-    )
-    return {"message": "Reset link sent."}
+    if reset_link:
+        background_tasks.add_task(
+            password_service.email_service.send_password_reset_email,
+            email,
+            reset_link,
+        )
+    return {"success": True}
 
 
 @router.post("/reset", operation_id="resetPasswordWithToken")
@@ -41,7 +42,7 @@ async def reset_password_with_token(
     await password_service.reset_password_with_token(
         token=request.token, new_password=request.new_password
     )
-    return {"message": "Password successfully updated."}
+    return {"success": True}
 
 
 @router.post("/update", operation_id="updatePassword")
@@ -52,4 +53,4 @@ async def update_password(
     password_service: PasswordService = Depends(Provide[Container.password_service]),
 ):
     await password_service.reset_password_direct(user.id, request.new_password)
-    return {"message": "Password successfully updated."}
+    return {"success": True}

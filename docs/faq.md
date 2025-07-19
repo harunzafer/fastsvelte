@@ -45,3 +45,6 @@ In small projects, the shorter names are fine. But once your project grows and y
 Why do you use `providers.Factory` for repositories and `services`? Wouldn’t Singleton be more efficient?
 
 - when statelss we use singleton. If not we use factory.
+
+
+### Why do we raise custom exceptions from both services and routes?

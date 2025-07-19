@@ -8,8 +8,13 @@ class SummaryService:
 
     async def summarize(self, text: str) -> str:
         messages = [
-            {"role": "system", "content": "You are a helpful assistant that summarizes notes."},
+            {
+                "role": "system",
+                "content": "You are a helpful assistant that summarizes notes.",
+            },
             {"role": "user", "content": f"Summarize the following note:\n\n{text}"},
         ]
-        result = await self.openai_service.get_structured_response(messages, NoteSummary)
+        result = await self.openai_service.get_structured_response(
+            messages, NoteSummary
+        )
         return result.summary.strip()
