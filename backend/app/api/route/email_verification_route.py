@@ -16,7 +16,9 @@ router = APIRouter()
 @inject
 async def verify_email(
     token: str = Query(...),
-    service: EmailVerificationService = Depends(Provide[Container.email_verification_service]),
+    service: EmailVerificationService = Depends(
+        Provide[Container.email_verification_service]
+    ),
 ):
     verified = await service.verify_email(token)
     if not verified:
@@ -28,7 +30,9 @@ async def verify_email(
 @inject
 async def resend_verification(
     request: ResendVerificationRequest,
-    service: EmailVerificationService = Depends(Provide[Container.email_verification_service]),
+    service: EmailVerificationService = Depends(
+        Provide[Container.email_verification_service]
+    ),
 ):
     user = await service.get_user_by_email(request.email)
     if not user:

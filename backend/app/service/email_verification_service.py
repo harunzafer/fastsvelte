@@ -26,7 +26,9 @@ class EmailVerificationService:
         await self.email_verification_repo.create_token(user_id, token, expires_at)
 
         link = f"{self.frontend_url}/verify-email?token={token}"
-        await self.email_service.send_email_verification(email=email, verification_link=link)
+        await self.email_service.send_email_verification(
+            email=email, verification_link=link
+        )
 
     async def verify_email(self, token: str) -> bool:
         user_id = await self.email_verification_repo.get_user_id_by_valid_token(token)

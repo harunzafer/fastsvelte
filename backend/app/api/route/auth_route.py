@@ -18,6 +18,7 @@ from fastapi import APIRouter, Depends, Response, status
 
 router = APIRouter()
 
+
 @router.post(
     "/signup",
     response_model=SignupSuccess,

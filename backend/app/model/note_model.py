@@ -30,6 +30,6 @@ class NoteResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+
 class NoteSummary(BaseModel):
     summary: str
-

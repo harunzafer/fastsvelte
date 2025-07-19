@@ -16,4 +16,3 @@ class BaseAppException(Exception):
         self.status_code = status_code
         self.details = details or {}
         self.error_id = error_id or str(uuid.uuid4())
-

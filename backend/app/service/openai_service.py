@@ -7,7 +7,12 @@ T = TypeVar("T", bound=BaseModel)
 
 
 class OpenAIService:
-    def __init__(self, model: str = "gpt-4o-2024-08-06", temperature: float = 0.1, api_key: str = None):
+    def __init__(
+        self,
+        model: str = "gpt-4o-2024-08-06",
+        temperature: float = 0.1,
+        api_key: str = None,
+    ):
         self.client = AsyncOpenAI(api_key=api_key)
         self.model = model
         self.temperature = temperature

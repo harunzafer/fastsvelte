@@ -3,7 +3,9 @@ from app.model.role_model import Role
 from app.model.user_model import CurrentUser, User
 
 
-def require_same_org_or_admin(actor: CurrentUser, target: User, action: str = "perform this action") -> None:
+def require_same_org_or_admin(
+    actor: CurrentUser, target: User, action: str = "perform this action"
+) -> None:
     """
     Raises AccessDenied if actor is not SYSTEM_ADMIN and is not in the same org as the target.
     """

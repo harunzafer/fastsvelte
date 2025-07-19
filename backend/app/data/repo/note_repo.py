@@ -33,7 +33,9 @@ class NoteRepo(BaseRepo):
         rows = await self.fetch_all(query, user_id)
         return [Note(**row) for row in rows]
 
-    async def update_note(self, note_id: int, user_id: int, title: Optional[str], content: Optional[str]) -> Optional[Note]:
+    async def update_note(
+        self, note_id: int, user_id: int, title: Optional[str], content: Optional[str]
+    ) -> Optional[Note]:
         query = """
             UPDATE fastsvelte.note
             SET title = COALESCE($3, title),

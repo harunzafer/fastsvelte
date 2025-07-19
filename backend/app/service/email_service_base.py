@@ -11,15 +11,21 @@ class EmailService(ABC):
         await self._send_email(email, subject, plain_text, html_content)
 
     async def send_invitation_email(self, email: str, invite_link: str) -> None:
-        subject, plain_text, html_content = self._get_invitation_email_content(invite_link)
+        subject, plain_text, html_content = self._get_invitation_email_content(
+            invite_link
+        )
         await self._send_email(email, subject, plain_text, html_content)
 
     async def send_password_reset_email(self, email: str, reset_link: str) -> None:
-        subject, plain_text, html_content = self._get_password_reset_email_content(reset_link)
+        subject, plain_text, html_content = self._get_password_reset_email_content(
+            reset_link
+        )
         await self._send_email(email, subject, plain_text, html_content)
 
     @abstractmethod
-    async def _send_email(self, to_email: str, subject: str, plain_text: str, html_content: str) -> None:
+    async def _send_email(
+        self, to_email: str, subject: str, plain_text: str, html_content: str
+    ) -> None:
         pass
 
     def _get_invitation_email_content(self, invite_link: str) -> tuple[str, str, str]:
@@ -76,7 +82,9 @@ If you have any questions, feel free to reach out to our support team.
 """
         return subject, plain_text, html_content
 
-    def _get_password_reset_email_content(self, reset_link: str) -> tuple[str, str, str]:
+    def _get_password_reset_email_content(
+        self, reset_link: str
+    ) -> tuple[str, str, str]:
         app_name = settings.app_name
         subject = f"Reset your {app_name} password"
 
