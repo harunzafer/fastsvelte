@@ -1,6 +1,9 @@
 from app.api.middleware.auth_handler import get_current_user
 from app.config.container import Container
-from app.config.settings import settings
+from app.exception.auth_exception import (
+    EmailNotVerified,
+    InvalidCredentials,
+)
 from app.model.auth_model import (
     LoginRequest,
     LoginSuccess,
@@ -12,26 +15,30 @@ from app.service.auth_service import AuthService
 from app.util.cookie_util import clear_session_cookie, set_session_cookie
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Response, status
-from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
-samesite_value = "lax" if settings.environment == "dev" else "strict"
-
-
-@router.post("/signup", response_model=SignupSuccess, operation_id="signup")
+@router.post(
+    "/signup",
+    response_model=SignupSuccess,
+    operation_id="signup",
+)
 @inject
 async def signup(
     request: SignupRequest,
     response: Response,
     auth_service: AuthService = Depends(Provide[Container.auth_service]),
 ):
-    signup_session = await auth_service.signup(request)
-    set_session_cookie(response, signup_session.token)
-    return SignupSuccess(user_id=signup_session.user_id)
+    # Service handles all business logic exceptions
+    result = await auth_service.signup(request)
+    return SignupSuccess(user_id=result.user_id)
 
 
-@router.post("/login", response_model=LoginSuccess, operation_id="login")
+@router.post(
+    "/login",
+    response_model=LoginSuccess,
+    operation_id="login",
+)
 @inject
 async def login(
     request: LoginRequest,
@@ -43,17 +50,22 @@ async def login(
     )
 
     if not user:
-        return JSONResponse(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            content={"detail": "Invalid credentials"},
-        )
+        raise InvalidCredentials()
+
+    if not user.email_verified:
+        raise EmailNotVerified()
 
     session, token = await auth_service.create_session(user.id)
     set_session_cookie(response, token)
 
     return LoginSuccess(user_id=session.user_id)
 
-@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+
+@router.post(
+    "/logout",
+    status_code=status.HTTP_204_NO_CONTENT,
+    operation_id="logout",
+)
 @inject
 async def logout(
     response: Response,

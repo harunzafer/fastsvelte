@@ -8,7 +8,7 @@ from app.data.repo.org_repo import OrgRepo
 from app.data.repo.session_repo import SessionRepo
 from app.data.repo.user_repo import UserRepo
 from app.exception.auth_exception import EmailAlreadyExists, SignupFailed
-from app.model.auth_model import SignupRequest, SignupSession
+from app.model.auth_model import SignupRequest, SignupResult
 from app.model.session_model import Session
 from app.model.user_model import (
     CreateUser,
@@ -16,16 +16,22 @@ from app.model.user_model import (
     User,
     UserWithPassword,
 )
-from app.util.auth_util import hash_password, verify_password_hash
+from app.service.email_verification_service import EmailVerificationService
+from app.util.hash_util import hash_password, verify_password_hash
 
 
 class AuthService:
     def __init__(
-        self, user_repo: UserRepo, session_repo: SessionRepo, org_repo: OrgRepo
+        self,
+        user_repo: UserRepo,
+        session_repo: SessionRepo,
+        org_repo: OrgRepo,
+        email_verification_service: EmailVerificationService,
     ):
         self.user_repo = user_repo
         self.session_repo = session_repo
         self.org_repo = org_repo
+        self.email_verification_service = email_verification_service
 
     def generate_session_token(self) -> str:
         return secrets.token_urlsafe(32)  # ~43 chars, secure, URL-safe
@@ -74,7 +80,7 @@ class AuthService:
 
         return CurrentUser(**user.model_dump(), session=session)
 
-    async def signup(self, data: SignupRequest) -> SignupSession:
+    async def signup(self, data: SignupRequest) -> SignupResult:
         # We perform an explicit uniqueness check before creating the user.
         # This avoids consuming an auto-incrementing ID in case of duplicate emails,
         # since PostgreSQL sequences are non-transactional and will increment even if the insert fails.
@@ -110,8 +116,12 @@ class AuthService:
         except Exception as ex:
             raise SignupFailed("Signup failed") from ex
 
-        session, token = await self.create_session(user_id)
-        return SignupSession(token=token, user_id=user_id)
+        # Send verification email
+        await self.email_verification_service.send_verification_email(
+            user_id=user_id, email=data.email
+        )
+
+        return SignupResult(user_id=user_id)
 
     async def verify_credentials(self, email: str, password: str) -> User | None:
         user_with_pw: UserWithPassword = (

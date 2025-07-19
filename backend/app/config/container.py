@@ -1,5 +1,6 @@
 from app.config.settings import settings
 from app.data.db_config import DatabaseConfig
+from app.data.repo.email_verification_repo import EmailVerificationRepo
 from app.data.repo.note_repo import NoteRepo
 from app.data.repo.org_repo import OrgRepo
 from app.data.repo.organization_setting_repo import OrganizationSettingRepo
@@ -10,6 +11,7 @@ from app.data.repo.user_repo import UserRepo
 from app.data.repo.user_setting_repo import UserSettingRepo
 from app.service.auth_service import AuthService
 from app.service.email_service_stub import StubEmailService
+from app.service.email_verification_service import EmailVerificationService
 from app.service.note_service import NoteService
 from app.service.openai_service import OpenAIService
 from app.service.password_service import PasswordService
@@ -31,6 +33,10 @@ class Container(containers.DeclarativeContainer):
         SettingRepo,
         db_config=db_config,
     )
+    email_verification_repo = providers.Factory(
+        EmailVerificationRepo,
+        db_config=db_config,
+    )
 
     user_setting_repo = providers.Factory(
         UserSettingRepo,
@@ -50,6 +56,12 @@ class Container(containers.DeclarativeContainer):
     )
 
     email_service = providers.Singleton(StubEmailService)
+    email_verification_service = providers.Factory(
+        EmailVerificationService,
+        email_service=email_service,
+        email_verification_repo=email_verification_repo,
+        user_repo=user_repo,
+    )
     openai_service = providers.Factory(
         OpenAIService,
         model="gpt-4o-mini",
@@ -68,6 +80,7 @@ class Container(containers.DeclarativeContainer):
         user_repo=user_repo,
         session_repo=session_repo,
         org_repo=org_repo,
+        email_verification_service=email_verification_service,
     )
     password_service = providers.Factory(
         PasswordService,
@@ -90,5 +103,6 @@ class Container(containers.DeclarativeContainer):
             "app.api.route.password_route",
             "app.api.route.note_route",
             "app.api.route.setting_route",
+            "app.api.route.email_verification_route",
         ]
     )

@@ -3,3 +3,4 @@
 
 001_create_schema 2025-06-29T19:59:42Z Harun Zafer <harunzafer.dev@gmail.com> # Add schema for all fastsvelte objects
 002_basic_tables 2025-07-07T20:40:37Z Harun Zafer <harunzafer.dev@gmail.com> # Basic Tables
+003_email_verification 2025-07-18T20:47:33Z Harun Zafer <harunzafer.dev@gmail.com> # Email Verification
