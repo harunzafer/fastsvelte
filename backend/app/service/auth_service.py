@@ -100,6 +100,9 @@ class AuthService:
                 f"{data.email}'s Organization", conn
             )
 
+            pricing_id = await self.org_repo.get_default_pricing_plan_id_tx(conn)
+            await self.org_repo.assign_pricing_plan_tx(org_id, pricing_id, conn)
+
             user = CreateUser(
                 email=data.email,
                 password_hash=password_hash,

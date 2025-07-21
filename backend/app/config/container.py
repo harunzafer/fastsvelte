@@ -5,6 +5,7 @@ from app.data.repo.note_repo import NoteRepo
 from app.data.repo.org_repo import OrgRepo
 from app.data.repo.organization_setting_repo import OrganizationSettingRepo
 from app.data.repo.password_repo import PasswordRepo
+from app.data.repo.pricing_repo import PricingRepo
 from app.data.repo.session_repo import SessionRepo
 from app.data.repo.setting_repo import SettingRepo
 from app.data.repo.user_repo import UserRepo
@@ -15,6 +16,7 @@ from app.service.email_verification_service import EmailVerificationService
 from app.service.note_service import NoteService
 from app.service.openai_service import OpenAIService
 from app.service.password_service import PasswordService
+from app.service.pricing_service import PricingService
 from app.service.setting_service import SettingService
 from app.service.summary_service import SummaryService
 from app.service.user_service import UserService
@@ -24,6 +26,7 @@ from dependency_injector import containers, providers
 class Container(containers.DeclarativeContainer):
     db_config = providers.Singleton(DatabaseConfig, dsn=settings.db_url)
 
+    # Repositories
     user_repo = providers.Singleton(UserRepo, db_config=db_config)
     org_repo = providers.Singleton(OrgRepo, db_config=db_config)
     session_repo = providers.Singleton(SessionRepo, db_config=db_config)
@@ -37,17 +40,17 @@ class Container(containers.DeclarativeContainer):
         EmailVerificationRepo,
         db_config=db_config,
     )
-
     user_setting_repo = providers.Factory(
         UserSettingRepo,
         db_config=db_config,
     )
-
     organization_setting_repo = providers.Factory(
         OrganizationSettingRepo,
         db_config=db_config,
     )
+    pricing_repo = providers.Factory(PricingRepo, db_config=db_config)
 
+    # Services
     setting_service = providers.Factory(
         SettingService,
         user_setting_repo=user_setting_repo,
@@ -95,6 +98,8 @@ class Container(containers.DeclarativeContainer):
         summary_service=summary_service,
     )
 
+    pricing_service = providers.Factory(PricingService, pricing_repo=pricing_repo)
+
     wiring_config = containers.WiringConfiguration(
         modules=[
             "app.api.middleware.auth_handler",
@@ -104,5 +109,6 @@ class Container(containers.DeclarativeContainer):
             "app.api.route.note_route",
             "app.api.route.setting_route",
             "app.api.route.email_verification_route",
+            "app.api.route.pricing_route",
         ]
     )
