@@ -71,6 +71,7 @@ class UserRepo(BaseRepo):
             data.first_name,
             data.last_name,
             data.organization_id,
+            data.role_name,
         )
         return row["id"]
 
@@ -81,7 +82,7 @@ class UserRepo(BaseRepo):
             )
             VALUES (
                 $1, $2, $3, $4, $5,
-                (SELECT id FROM fastsvelte.role WHERE name = 'member' LIMIT 1)
+                (SELECT id FROM fastsvelte.role WHERE name = $6 LIMIT 1)
             )
             RETURNING id
         """

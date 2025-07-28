@@ -6,7 +6,10 @@ from app.model.user_model import (
     UpdateUserRequest,
     UserResponse,
     UserWithRole,
+    UserWithRoleAndPlanStatus,
 )
+from app.service.onboarding_service import OnboardingService
+from app.service.subscription_service import SubscriptionService
 from app.service.user_service import UserService
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
@@ -14,11 +17,20 @@ from fastapi import APIRouter, Depends
 router = APIRouter()
 
 
-@router.get("/me", response_model=UserWithRole, operation_id="getCurrentUser")
+@router.get("/me", response_model=dict, operation_id="getCurrentUser")
+@inject
 async def get_current_user_route(
     user: CurrentUser = Depends(min_role_required(Role.READONLY)),
+    onboarding_service: OnboardingService = Depends(
+        Provide[Container.onboarding_service]
+    ),
 ):
-    return UserWithRole.model_validate(user.model_dump())
+    onboarding_status = await onboarding_service.get_status(user.organization_id)
+
+    return {
+        "user": UserWithRole.model_validate(user.model_dump()),
+        "first_seen_status": onboarding_status,
+    }
 
 
 @router.post("/me/update", operation_id="updateUserInfo")

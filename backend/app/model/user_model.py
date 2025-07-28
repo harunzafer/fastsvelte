@@ -25,6 +25,10 @@ class UserWithRole(User):
     role: Role
 
 
+class UserWithRoleAndPlanStatus(UserWithRole):
+    needs_plan_selection: bool
+
+
 class CurrentUser(UserWithRole):
     session: Session
 
@@ -35,6 +39,7 @@ class CreateUser(BaseModel):
     first_name: Optional[str]
     last_name: Optional[str]
     organization_id: int
+    role_name: str = "member"
 
 
 class UserWithPassword(User):
