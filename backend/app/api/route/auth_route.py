@@ -11,11 +11,15 @@ from app.exception.auth_exception import (
 from app.model.auth_model import (
     LoginRequest,
     LoginSuccess,
+    OAuthLoginRequest,  # 👈 new import
     SignupOrgRequest,
     SignupRequest,
     SignupSuccess,
 )
-from app.model.user_model import CurrentUser, User
+from app.model.user_model import (
+    CurrentUser,
+    User,  # already present
+)
 from app.service.auth_service import AuthService
 from app.service.onboarding_service import OnboardingService
 from app.util.cookie_util import clear_session_cookie, set_session_cookie
@@ -91,6 +95,40 @@ async def login(
             )
         except Exception as e:
             # Optional: log and continue
+            logger.warning(
+                f"Failed to trigger onboarding: org_id={user.organization_id}, error={e}"
+            )
+
+    return LoginSuccess(user_id=session.user_id)
+
+
+@router.post(
+    "/oauth/google", response_model=LoginSuccess, operation_id="loginWithGoogle"
+)
+@inject
+async def login_with_google(
+    request: OAuthLoginRequest,
+    response: Response,
+    auth_service: AuthService = Depends(Provide[Container.auth_service]),
+    onboarding_service: OnboardingService = Depends(
+        Provide[Container.onboarding_service]
+    ),
+):
+    user: User = await auth_service.login_with_google(request.id_token)
+
+    session, token = await auth_service.create_session(user.id)
+    set_session_cookie(response, token)
+
+    if settings.mode == "b2c":
+        try:
+            asyncio.create_task(
+                onboarding_service.run_first_seen(
+                    org_id=user.organization_id,
+                    email=user.email,
+                    full_name=f"{user.first_name} {user.last_name}",
+                )
+            )
+        except Exception as e:
             logger.warning(
                 f"Failed to trigger onboarding: org_id={user.organization_id}, error={e}"
             )

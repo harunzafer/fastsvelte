@@ -152,3 +152,30 @@ class UserRepo(BaseRepo):
             WHERE id = $1 AND deleted_at IS NULL
         """
         await self.execute(query, *params)
+
+    async def get_user_by_oauth(
+        self, provider_id: str, provider_user_id: str
+    ) -> User | None:
+        query = """
+            SELECT u.id, u.email, u.first_name, u.last_name, u.avatar_url,
+                   u.email_verified, u.email_verified_at,
+                   u.is_active, u.deleted_at,
+                   u.organization_id, u.role_id,
+                   u.created_at, u.updated_at
+            FROM fastsvelte.oauth_account oa
+            JOIN fastsvelte."user" u ON oa.user_id = u.id
+            WHERE oa.provider_id = $1 AND oa.provider_user_id = $2
+              AND u.deleted_at IS NULL
+        """
+        row = await self.fetch_one(query, provider_id, provider_user_id)
+        return User(**row) if row else None
+
+    async def create_oauth_account(
+        self, user_id: int, provider_id: str, provider_user_id: str
+    ) -> None:
+        query = """
+            INSERT INTO fastsvelte.oauth_account (user_id, provider_id, provider_user_id)
+            VALUES ($1, $2, $3)
+            ON CONFLICT DO NOTHING
+        """
+        await self.execute(query, user_id, provider_id, provider_user_id)

@@ -37,3 +37,7 @@ class SignupResult(BaseModel):
 
 class ResendVerificationRequest(BaseModel):
     email: EmailStr
+
+
+class OAuthLoginRequest(BaseModel):
+    id_token: str
