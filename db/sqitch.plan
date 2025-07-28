@@ -7,3 +7,4 @@
 004_add_is_default_to_pricing 2025-07-21T12:02:10Z Harun Zafer <harunzafer.dev@gmail.com> # Add is default to pricing
 005_plan_and_usage 2025-07-23T20:25:46Z Harun Zafer <harunzafer.dev@gmail.com> # Stripe Integration Update
 006_update_organization_table 2025-07-25T18:28:32Z Harun Zafer <harunzafer.dev@gmail.com> # Add onboarding related fields
+007_invitation 2025-07-28T18:47:24Z Harun Zafer <harunzafer.dev@gmail.com> # Add invitation table

@@ -9,7 +9,8 @@ from app.data.repo.organization_repo import OrganizationRepo
 from app.data.repo.session_repo import SessionRepo
 from app.data.repo.user_repo import UserRepo
 from app.exception.auth_exception import EmailAlreadyExists, SignupFailed
-from app.model.auth_model import SignupRequest, SignupResult
+from app.model.auth_model import SignupOrgRequest, SignupRequest, SignupResult
+from app.model.role_model import Role
 from app.model.session_model import Session
 from app.model.user_model import (
     CreateUser,
@@ -104,7 +105,9 @@ class AuthService:
             )
 
             # In b2c mode, each customer has one and only one organization
-            role_name = "org_admin" if settings.mode == "b2c" else "member"
+            role_name = (
+                Role.ORG_ADMIN.name if settings.mode == "b2c" else Role.MEMBER.name
+            )
 
             user = CreateUser(
                 email=data.email,
@@ -126,6 +129,43 @@ class AuthService:
             raise SignupFailed()
 
         # Send verification email
+        await self.email_verification_service.send_verification_email(
+            user_id=user_id, email=data.email
+        )
+
+        return SignupResult(user_id=user_id)
+
+    async def signup_org(self, data: SignupOrgRequest) -> SignupResult:
+        existing = await self.user_repo.get_user_by_email(data.email)
+        if existing:
+            raise EmailAlreadyExists("Email is already in use")
+
+        password_hash = hash_password(data.password)
+
+        async def tx(conn):
+            org_id = await self.org_repo.create_organization_tx(
+                data.organization_name, conn
+            )
+
+            user = CreateUser(
+                email=data.email,
+                password_hash=password_hash,
+                first_name=data.first_name,
+                last_name=data.last_name,
+                organization_id=org_id,
+                role_name=Role.ORG_ADMIN.name,
+            )
+            user_id = await self.user_repo.create_user_tx(user, conn)
+            return user_id
+
+        try:
+            user_id = await self.user_repo.execute_transaction(tx)
+        except asyncpg.UniqueViolationError:
+            raise EmailAlreadyExists("Email is already in use")
+        except Exception as ex:
+            logger.error(ex)
+            raise SignupFailed()
+
         await self.email_verification_service.send_verification_email(
             user_id=user_id, email=data.email
         )

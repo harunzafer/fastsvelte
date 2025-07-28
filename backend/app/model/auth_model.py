@@ -10,6 +10,14 @@ class SignupRequest(BaseModel):
     last_name: Optional[str]
 
 
+class SignupOrgRequest(BaseModel):
+    email: EmailStr
+    password: str
+    first_name: Optional[str]
+    last_name: Optional[str]
+    organization_name: str
+
+
 class SignupSuccess(BaseModel):
     user_id: int
 

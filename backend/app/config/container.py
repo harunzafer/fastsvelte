@@ -1,6 +1,7 @@
 from app.config.settings import settings
 from app.data.db_config import DatabaseConfig
 from app.data.repo.email_verification_repo import EmailVerificationRepo
+from app.data.repo.invitation_repo import InvitationRepo
 from app.data.repo.note_repo import NoteRepo
 from app.data.repo.organization_plan_repo import OrganizationPlanRepo
 from app.data.repo.organization_repo import OrganizationRepo
@@ -15,6 +16,7 @@ from app.data.repo.user_setting_repo import UserSettingRepo
 from app.service.auth_service import AuthService
 from app.service.email_service_stub import StubEmailService
 from app.service.email_verification_service import EmailVerificationService
+from app.service.invitation_service import InvitationService
 from app.service.note_service import NoteService
 from app.service.onboarding_service import OnboardingService
 from app.service.openai_service import OpenAIService
@@ -62,6 +64,12 @@ class Container(containers.DeclarativeContainer):
     )
     organization_usage_repo = providers.Factory(
         OrganizationUsageRepo, db_config=db_config
+    )
+
+    # Repos
+    invitation_repo = providers.Factory(
+        InvitationRepo,
+        db_config=db_config,
     )
 
     organization_usage_service = providers.Factory(
@@ -116,6 +124,14 @@ class Container(containers.DeclarativeContainer):
         email_verification_repo=email_verification_repo,
         user_repo=user_repo,
     )
+
+    invitation_service = providers.Factory(
+        InvitationService,
+        invitation_repo=invitation_repo,
+        user_repo=user_repo,
+        org_repo=organization_repo,
+    )
+
     openai_service = providers.Factory(
         OpenAIService,
         model="gpt-4o-mini",
@@ -163,5 +179,6 @@ class Container(containers.DeclarativeContainer):
             "app.api.route.plan_route",
             "app.api.route.subscription_route",
             "app.api.route.stripe_webhook_route",
+            "app.api.route.invitation_route",
         ]
     )
