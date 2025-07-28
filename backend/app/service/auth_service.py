@@ -208,11 +208,9 @@ class AuthService:
         existing_user = await self.user_repo.get_user_by_oauth(
             provider_id, provider_user_id
         )
-
         if existing_user:
             return existing_user
 
-        # New user: create org + user
         async def tx(conn):
             org_name = f"{email}'s Organization"
             org_id = await self.org_repo.create_organization_tx(org_name, conn)
@@ -223,35 +221,19 @@ class AuthService:
 
             user = CreateUser(
                 email=email,
-                password_hash=None,  # No password for OAuth
+                password_hash=None,
                 first_name=first_name,
                 last_name=last_name,
                 organization_id=org_id,
                 role_name=role_name,
                 email_verified=True,
                 email_verified_at=datetime.now(timezone.utc),
+                avatar_url=avatar_url,
             )
-
             user_id = await self.user_repo.create_user_tx(user, conn)
-
-            # Set avatar_url if needed
-            if avatar_url:
-                await conn.execute(
-                    'UPDATE fastsvelte."user" SET avatar_url = $1 WHERE id = $2',
-                    avatar_url,
-                    user_id,
-                )
-
-            await conn.execute(
-                """
-                INSERT INTO fastsvelte.oauth_account (provider_id, provider_user_id, user_id)
-                VALUES ($1, $2, $3)
-                """,
-                provider_id,
-                provider_user_id,
-                user_id,
+            await self.user_repo.create_oauth_account_tx(
+                conn, provider_id, provider_user_id, user_id
             )
-
             return user_id
 
         try:
@@ -260,8 +242,7 @@ class AuthService:
             logger.error(f"OAuth signup failed: {e}")
             raise SignupFailed()
 
-        user = await self.user_repo.get_user_by_id(user_id)
-        return user
+        return await self.user_repo.get_user_by_id(user_id)
 
     async def invalidate_session(self, session_id: str) -> None:
         await self.session_repo.delete_session(session_id)

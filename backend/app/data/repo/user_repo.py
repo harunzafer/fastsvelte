@@ -63,6 +63,7 @@ class UserRepo(BaseRepo):
             data.role_name,
             data.email_verified,
             data.email_verified_at,
+            data.avatar_url,
         )
         return row["id"]
 
@@ -77,6 +78,7 @@ class UserRepo(BaseRepo):
             data.role_name,
             data.email_verified,
             data.email_verified_at,
+            data.avatar_url,
         )
         return row["id"]
 
@@ -85,16 +87,35 @@ class UserRepo(BaseRepo):
             INSERT INTO fastsvelte."user" (
                 email, password_hash, first_name, last_name,
                 organization_id, role_id,
-                email_verified, email_verified_at
+                email_verified, email_verified_at,
+                avatar_url
             )
             VALUES (
                 $1, $2, $3, $4,
                 $5,
                 (SELECT id FROM fastsvelte.role WHERE name = $6),
-                $7, $8
+                $7, $8,
+                $9
             )
             RETURNING id
         """
+
+    async def create_oauth_account_tx(
+        self,
+        conn,
+        provider_id: str,
+        provider_user_id: str,
+        user_id: int,
+    ) -> None:
+        await conn.execute(
+            """
+            INSERT INTO fastsvelte.oauth_account (provider_id, provider_user_id, user_id)
+            VALUES ($1, $2, $3)
+            """,
+            provider_id,
+            provider_user_id,
+            user_id,
+        )
 
     async def get_user_with_role_by_id(self, user_id: int) -> Optional[UserWithRole]:
         query = """

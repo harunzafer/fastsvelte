@@ -33,6 +33,7 @@ class Settings(BaseSettings):
     stripe_api_key: str
     stripe_webhook_secret: str
     invitation_expiry_days: int = 7
+    google_client_id: str
 
     model_config = ConfigDict(
         env_file=".env",

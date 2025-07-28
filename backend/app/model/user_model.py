@@ -43,6 +43,7 @@ class CreateUser(BaseModel):
     role_name: str
     email_verified: Optional[bool] = False
     email_verified_at: Optional[datetime] = None
+    avatar_url: Optional[str] = None
 
 
 class UserWithPassword(User):
