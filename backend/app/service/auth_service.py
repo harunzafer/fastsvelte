@@ -20,6 +20,8 @@ from app.model.user_model import (
 )
 from app.service.email_verification_service import EmailVerificationService
 from app.util.hash_util import hash_password, verify_password_hash
+from google.auth.transport import requests as google_requests
+from google.oauth2 import id_token
 
 logger = logging.getLogger(__name__)
 
@@ -184,6 +186,63 @@ class AuthService:
             return None
 
         return User(**user_with_pw.model_dump())
+
+    async def login_with_google(self, id_token_str: str) -> User:
+        try:
+            id_info = id_token.verify_oauth2_token(
+                id_token_str,
+                google_requests.Request(),
+                audience=settings.google_client_id,
+            )
+        except Exception as e:
+            logger.warning(f"Invalid Google ID token: {e}")
+            raise SignupFailed("Invalid ID token")
+
+        provider_id = "google"
+        provider_user_id = id_info["sub"]
+        email = id_info["email"]
+        first_name = id_info.get("given_name", "")
+        last_name = id_info.get("family_name", "")
+        avatar_url = id_info.get("picture")
+
+        existing_user = await self.user_repo.get_user_by_oauth(
+            provider_id, provider_user_id
+        )
+        if existing_user:
+            return existing_user
+
+        async def tx(conn):
+            org_name = f"{email}'s Organization"
+            org_id = await self.org_repo.create_organization_tx(org_name, conn)
+
+            role_name = (
+                Role.ORG_ADMIN.name if settings.mode == "b2c" else Role.MEMBER.name
+            )
+
+            user = CreateUser(
+                email=email,
+                password_hash=None,
+                first_name=first_name,
+                last_name=last_name,
+                organization_id=org_id,
+                role_name=role_name,
+                email_verified=True,
+                email_verified_at=datetime.now(timezone.utc),
+                avatar_url=avatar_url,
+            )
+            user_id = await self.user_repo.create_user_tx(user, conn)
+            await self.user_repo.create_oauth_account_tx(
+                conn, provider_id, provider_user_id, user_id
+            )
+            return user_id
+
+        try:
+            user_id = await self.user_repo.execute_transaction(tx)
+        except Exception as e:
+            logger.error(f"OAuth signup failed: {e}")
+            raise SignupFailed()
+
+        return await self.user_repo.get_user_by_id(user_id)
 
     async def invalidate_session(self, session_id: str) -> None:
         await self.session_repo.delete_session(session_id)

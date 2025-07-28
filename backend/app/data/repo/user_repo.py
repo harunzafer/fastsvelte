@@ -63,6 +63,7 @@ class UserRepo(BaseRepo):
             data.role_name,
             data.email_verified,
             data.email_verified_at,
+            data.avatar_url,
         )
         return row["id"]
 
@@ -77,6 +78,7 @@ class UserRepo(BaseRepo):
             data.role_name,
             data.email_verified,
             data.email_verified_at,
+            data.avatar_url,
         )
         return row["id"]
 
@@ -85,16 +87,35 @@ class UserRepo(BaseRepo):
             INSERT INTO fastsvelte."user" (
                 email, password_hash, first_name, last_name,
                 organization_id, role_id,
-                email_verified, email_verified_at
+                email_verified, email_verified_at,
+                avatar_url
             )
             VALUES (
                 $1, $2, $3, $4,
                 $5,
                 (SELECT id FROM fastsvelte.role WHERE name = $6),
-                $7, $8
+                $7, $8,
+                $9
             )
             RETURNING id
         """
+
+    async def create_oauth_account_tx(
+        self,
+        conn,
+        provider_id: str,
+        provider_user_id: str,
+        user_id: int,
+    ) -> None:
+        await conn.execute(
+            """
+            INSERT INTO fastsvelte.oauth_account (provider_id, provider_user_id, user_id)
+            VALUES ($1, $2, $3)
+            """,
+            provider_id,
+            provider_user_id,
+            user_id,
+        )
 
     async def get_user_with_role_by_id(self, user_id: int) -> Optional[UserWithRole]:
         query = """
@@ -152,3 +173,30 @@ class UserRepo(BaseRepo):
             WHERE id = $1 AND deleted_at IS NULL
         """
         await self.execute(query, *params)
+
+    async def get_user_by_oauth(
+        self, provider_id: str, provider_user_id: str
+    ) -> User | None:
+        query = """
+            SELECT u.id, u.email, u.first_name, u.last_name, u.avatar_url,
+                   u.email_verified, u.email_verified_at,
+                   u.is_active, u.deleted_at,
+                   u.organization_id, u.role_id,
+                   u.created_at, u.updated_at
+            FROM fastsvelte.oauth_account oa
+            JOIN fastsvelte."user" u ON oa.user_id = u.id
+            WHERE oa.provider_id = $1 AND oa.provider_user_id = $2
+              AND u.deleted_at IS NULL
+        """
+        row = await self.fetch_one(query, provider_id, provider_user_id)
+        return User(**row) if row else None
+
+    async def create_oauth_account(
+        self, user_id: int, provider_id: str, provider_user_id: str
+    ) -> None:
+        query = """
+            INSERT INTO fastsvelte.oauth_account (user_id, provider_id, provider_user_id)
+            VALUES ($1, $2, $3)
+            ON CONFLICT DO NOTHING
+        """
+        await self.execute(query, user_id, provider_id, provider_user_id)

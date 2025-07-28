@@ -8,3 +8,4 @@
 005_plan_and_usage 2025-07-23T20:25:46Z Harun Zafer <harunzafer.dev@gmail.com> # Stripe Integration Update
 006_update_organization_table 2025-07-25T18:28:32Z Harun Zafer <harunzafer.dev@gmail.com> # Add onboarding related fields
 007_invitation 2025-07-28T18:47:24Z Harun Zafer <harunzafer.dev@gmail.com> # Add invitation table
+008_oauth 2025-07-28T21:24:51Z Harun Zafer <harunzafer.dev@gmail.com> # Add OAuth related tables and fields

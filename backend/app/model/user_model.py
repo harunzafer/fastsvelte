@@ -11,6 +11,7 @@ class User(BaseModel):
     email: EmailStr
     first_name: str
     last_name: str
+    avatar_url: Optional[str] = None  # ✅ NEW
     email_verified: bool = False
     email_verified_at: Optional[datetime] = None
     is_active: bool = False
@@ -42,10 +43,18 @@ class CreateUser(BaseModel):
     role_name: str
     email_verified: Optional[bool] = False
     email_verified_at: Optional[datetime] = None
+    avatar_url: Optional[str] = None
 
 
 class UserWithPassword(User):
     password_hash: str
+
+
+class OAuthAccount(BaseModel):
+    provider_id: str
+    provider_user_id: str
+    user_id: int
+    created_at: datetime
 
 
 class UserResponse(BaseModel):
