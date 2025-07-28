@@ -51,3 +51,11 @@ def register_error_handlers(app):
                 details=field_errors,
             ).model_dump(),
         )
+
+    @app.exception_handler(Exception)
+    async def unhandled_exception_handler(request: Request, exc: Exception):
+        logger.error(f"Unhandled exception: {exc}", exc_info=True)
+        return JSONResponse(
+            status_code=500,
+            content={"detail": "Something unexpected happened. Please try again."},
+        )

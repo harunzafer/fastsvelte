@@ -15,3 +15,19 @@ class ResourceNotFound(BaseAppException):
             status_code=404,
             details=details or {"resource": resource, "resource_id": resource_id},
         )
+
+
+class QuotaExceeded(BaseAppException):
+    def __init__(
+        self, feature_key: str, limit: int | None = None, details: dict = None
+    ):
+        message = f"Quota exceeded for feature '{feature_key}'"
+        if limit is not None:
+            message += f" (limit: {limit})"
+
+        super().__init__(
+            code="QUOTA_EXCEEDED",
+            message=message,
+            status_code=403,
+            details=details or {"feature_key": feature_key, "limit": limit},
+        )

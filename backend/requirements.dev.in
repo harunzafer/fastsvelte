@@ -4,4 +4,7 @@ dependency-injector
 fastapi[standard]
 openai
 pydantic_settings
+pytest
+python-dateutil
 ruff
+stripe

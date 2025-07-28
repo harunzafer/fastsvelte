@@ -2,10 +2,12 @@ from app.config.settings import settings
 from app.data.db_config import DatabaseConfig
 from app.data.repo.email_verification_repo import EmailVerificationRepo
 from app.data.repo.note_repo import NoteRepo
-from app.data.repo.org_repo import OrgRepo
+from app.data.repo.organization_plan_repo import OrganizationPlanRepo
+from app.data.repo.organization_repo import OrganizationRepo
 from app.data.repo.organization_setting_repo import OrganizationSettingRepo
+from app.data.repo.organization_usage_repo import OrganizationUsageRepo
 from app.data.repo.password_repo import PasswordRepo
-from app.data.repo.pricing_repo import PricingRepo
+from app.data.repo.plan_repo import PlanRepo
 from app.data.repo.session_repo import SessionRepo
 from app.data.repo.setting_repo import SettingRepo
 from app.data.repo.user_repo import UserRepo
@@ -14,10 +16,14 @@ from app.service.auth_service import AuthService
 from app.service.email_service_stub import StubEmailService
 from app.service.email_verification_service import EmailVerificationService
 from app.service.note_service import NoteService
+from app.service.onboarding_service import OnboardingService
 from app.service.openai_service import OpenAIService
+from app.service.organization_usage_service import OrganizationUsageService
 from app.service.password_service import PasswordService
-from app.service.pricing_service import PricingService
+from app.service.plan_service import PlanService
 from app.service.setting_service import SettingService
+from app.service.stripe_service import StripeService
+from app.service.subscription_service import SubscriptionService
 from app.service.summary_service import SummaryService
 from app.service.user_service import UserService
 from dependency_injector import containers, providers
@@ -28,7 +34,7 @@ class Container(containers.DeclarativeContainer):
 
     # Repositories
     user_repo = providers.Singleton(UserRepo, db_config=db_config)
-    org_repo = providers.Singleton(OrgRepo, db_config=db_config)
+    organization_repo = providers.Singleton(OrganizationRepo, db_config=db_config)
     session_repo = providers.Singleton(SessionRepo, db_config=db_config)
     password_repo = providers.Singleton(PasswordRepo, db_config=db_config)
     note_repo = providers.Singleton(NoteRepo, db_config=db_config)
@@ -48,7 +54,52 @@ class Container(containers.DeclarativeContainer):
         OrganizationSettingRepo,
         db_config=db_config,
     )
-    pricing_repo = providers.Factory(PricingRepo, db_config=db_config)
+    plan_repo = providers.Factory(PlanRepo, db_config=db_config)
+
+    organization_plan_repo = providers.Factory(
+        OrganizationPlanRepo,
+        db_config=db_config,
+    )
+    organization_usage_repo = providers.Factory(
+        OrganizationUsageRepo, db_config=db_config
+    )
+
+    organization_usage_service = providers.Factory(
+        OrganizationUsageService,
+        usage_repo=organization_usage_repo,
+        plan_repo=plan_repo,
+        organization_plan_repo=organization_plan_repo,
+    )
+    subscription_service = providers.Factory(
+        SubscriptionService,
+        organization_repo=organization_repo,
+        plan_repo=plan_repo,
+        organization_plan_repo=organization_plan_repo,
+    )
+
+    # Stripe Service
+    stripe_service = providers.Factory(
+        StripeService,
+        api_key=settings.stripe_api_key,
+        webhook_secret=settings.stripe_webhook_secret,
+    )
+
+    # Subscription Service
+    subscription_service = providers.Factory(
+        SubscriptionService,
+        organization_repo=organization_repo,
+        plan_repo=plan_repo,
+        organization_plan_repo=organization_plan_repo,
+        stripe_service=stripe_service,
+    )
+
+    # Onboarding Service
+    onboarding_service = providers.Factory(
+        OnboardingService,
+        organization_repo=organization_repo,
+        organization_plan_repo=organization_plan_repo,
+        subscription_service=subscription_service,
+    )
 
     # Services
     setting_service = providers.Factory(
@@ -82,7 +133,7 @@ class Container(containers.DeclarativeContainer):
         AuthService,
         user_repo=user_repo,
         session_repo=session_repo,
-        org_repo=org_repo,
+        org_repo=organization_repo,
         email_verification_service=email_verification_service,
     )
     password_service = providers.Factory(
@@ -98,7 +149,7 @@ class Container(containers.DeclarativeContainer):
         summary_service=summary_service,
     )
 
-    pricing_service = providers.Factory(PricingService, pricing_repo=pricing_repo)
+    plan_service = providers.Factory(PlanService, plan_repo=plan_repo)
 
     wiring_config = containers.WiringConfiguration(
         modules=[
@@ -109,6 +160,8 @@ class Container(containers.DeclarativeContainer):
             "app.api.route.note_route",
             "app.api.route.setting_route",
             "app.api.route.email_verification_route",
-            "app.api.route.pricing_route",
+            "app.api.route.plan_route",
+            "app.api.route.subscription_route",
+            "app.api.route.stripe_webhook_route",
         ]
     )

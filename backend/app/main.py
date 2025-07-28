@@ -1,8 +1,14 @@
-from fastapi import FastAPI
+import logging
 
+from app.api.middleware.error_handler import register_error_handlers
 from app.api.router import include_all_routers
 from app.config.container import Container
-from app.api.middleware.error_handler import register_error_handlers
+from fastapi import FastAPI
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
+)
 
 
 def create_app() -> FastAPI:
