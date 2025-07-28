@@ -60,6 +60,9 @@ class UserRepo(BaseRepo):
             data.first_name,
             data.last_name,
             data.organization_id,
+            data.role_name,
+            data.email_verified,
+            data.email_verified_at,
         )
         return row["id"]
 
@@ -72,17 +75,23 @@ class UserRepo(BaseRepo):
             data.last_name,
             data.organization_id,
             data.role_name,
+            data.email_verified,
+            data.email_verified_at,
         )
         return row["id"]
 
     def _create_user_query(self) -> str:
         return """
             INSERT INTO fastsvelte."user" (
-                email, password_hash, first_name, last_name, organization_id, role_id
+                email, password_hash, first_name, last_name,
+                organization_id, role_id,
+                email_verified, email_verified_at
             )
             VALUES (
-                $1, $2, $3, $4, $5,
-                (SELECT id FROM fastsvelte.role WHERE name = $6 LIMIT 1)
+                $1, $2, $3, $4,
+                $5,
+                (SELECT id FROM fastsvelte.role WHERE name = $6),
+                $7, $8
             )
             RETURNING id
         """

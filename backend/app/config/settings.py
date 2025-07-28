@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     app_description: str = (
         "helps professionals like you work more efficiently with modern tools."
     )
-    mode: Literal["b2c", "b2b"] = "b2c"
+    mode: Literal["b2c", "b2b"] = "b2b"
     environment: str = "dev"
     db_url: str
     base_web_url: str = "http://localhost:5173"
@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     openai_api_key: str = None  # Should be set in .env
     stripe_api_key: str
     stripe_webhook_secret: str
+    invitation_expiry_days: int = 7
 
     model_config = ConfigDict(
         env_file=".env",

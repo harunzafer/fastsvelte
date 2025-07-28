@@ -11,6 +11,7 @@ from app.exception.auth_exception import (
 from app.model.auth_model import (
     LoginRequest,
     LoginSuccess,
+    SignupOrgRequest,
     SignupRequest,
     SignupSuccess,
 )
@@ -19,7 +20,7 @@ from app.service.auth_service import AuthService
 from app.service.onboarding_service import OnboardingService
 from app.util.cookie_util import clear_session_cookie, set_session_cookie
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 logger = logging.getLogger(__name__)
 
@@ -35,11 +36,23 @@ router = APIRouter()
 @inject
 async def signup(
     request: SignupRequest,
-    response: Response,
     auth_service: AuthService = Depends(Provide[Container.auth_service]),
 ):
     # Service handles all business logic exceptions
     result = await auth_service.signup(request)
+    return SignupSuccess(user_id=result.user_id)
+
+
+@router.post("/signup-org", response_model=SignupSuccess, operation_id="signupOrg")
+@inject
+async def signup_org(
+    request: SignupOrgRequest,
+    auth_service: AuthService = Depends(Provide[Container.auth_service]),
+):
+    if settings.mode != "b2b":
+        raise HTTPException(status_code=404, detail="Not found")
+
+    result = await auth_service.signup_org(request)
     return SignupSuccess(user_id=result.user_id)
 
 

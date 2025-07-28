@@ -39,7 +39,9 @@ class CreateUser(BaseModel):
     first_name: Optional[str]
     last_name: Optional[str]
     organization_id: int
-    role_name: str = "member"
+    role_name: str
+    email_verified: Optional[bool] = False
+    email_verified_at: Optional[datetime] = None
 
 
 class UserWithPassword(User):
