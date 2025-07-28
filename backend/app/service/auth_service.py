@@ -1,10 +1,11 @@
 import hashlib
+import logging
 import secrets
 from datetime import datetime, timedelta, timezone
 
 import asyncpg
 from app.config.settings import settings
-from app.data.repo.org_repo import OrgRepo
+from app.data.repo.organization_repo import OrganizationRepo
 from app.data.repo.session_repo import SessionRepo
 from app.data.repo.user_repo import UserRepo
 from app.exception.auth_exception import EmailAlreadyExists, SignupFailed
@@ -19,13 +20,15 @@ from app.model.user_model import (
 from app.service.email_verification_service import EmailVerificationService
 from app.util.hash_util import hash_password, verify_password_hash
 
+logger = logging.getLogger(__name__)
+
 
 class AuthService:
     def __init__(
         self,
         user_repo: UserRepo,
         session_repo: SessionRepo,
-        org_repo: OrgRepo,
+        org_repo: OrganizationRepo,
         email_verification_service: EmailVerificationService,
     ):
         self.user_repo = user_repo
@@ -100,8 +103,8 @@ class AuthService:
                 f"{data.email}'s Organization", conn
             )
 
-            pricing_id = await self.org_repo.get_default_pricing_plan_id_tx(conn)
-            await self.org_repo.assign_pricing_plan_tx(org_id, pricing_id, conn)
+            # In b2c mode, each customer has one and only one organization
+            role_name = "org_admin" if settings.mode == "b2c" else "member"
 
             user = CreateUser(
                 email=data.email,
@@ -109,15 +112,18 @@ class AuthService:
                 first_name=data.first_name,
                 last_name=data.last_name,
                 organization_id=org_id,
+                role_name=role_name,
             )
-            return await self.user_repo.create_user_tx(user, conn)
+            user_id = await self.user_repo.create_user_tx(user, conn)
+            return user_id, org_id
 
         try:
-            user_id = await self.user_repo.execute_transaction(tx)
+            user_id, org_id = await self.user_repo.execute_transaction(tx)
         except asyncpg.UniqueViolationError:
             raise EmailAlreadyExists("Email is already in use")  # fallback safeguard
         except Exception as ex:
-            raise SignupFailed("Signup failed") from ex
+            logger.error(ex)
+            raise SignupFailed()
 
         # Send verification email
         await self.email_verification_service.send_verification_email(
