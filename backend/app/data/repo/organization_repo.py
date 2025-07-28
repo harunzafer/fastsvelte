@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 
 from app.data.repo.base_repo import BaseRepo
 from app.model.organization_model import Organization

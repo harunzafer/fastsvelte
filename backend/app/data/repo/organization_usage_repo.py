@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from app.data.repo.base_repo import BaseRepo
 

@@ -6,10 +6,8 @@ from app.model.user_model import (
     UpdateUserRequest,
     UserResponse,
     UserWithRole,
-    UserWithRoleAndPlanStatus,
 )
 from app.service.onboarding_service import OnboardingService
-from app.service.subscription_service import SubscriptionService
 from app.service.user_service import UserService
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends

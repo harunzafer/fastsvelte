@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 
 import stripe
-from app.model.organization_model import Organization
 from stripe import Event, Webhook, billing_portal, checkout
 from stripe import error as stripe_error
 

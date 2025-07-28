@@ -36,7 +36,7 @@ class OrganizationUsageService:
 
         try:
             limit = int(plan.get_feature(feature_key))
-        except Exception as e:
+        except Exception:
             logger.exception(
                 f"Invalid or missing feature '{feature_key}' in plan '{plan.name}' (id={plan.id})"
             )

@@ -1,13 +1,10 @@
 from app.api.middleware.auth_handler import min_role_required
 from app.config.container import Container
-from app.config.settings import settings
-from app.data.repo.plan_repo import PlanRepo
 from app.model.role_model import Role
 from app.model.user_model import CurrentUser
-from app.service.stripe_service import StripeService
 from app.service.subscription_service import SubscriptionService
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
 router = APIRouter()
 
