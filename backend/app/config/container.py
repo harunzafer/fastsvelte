@@ -14,6 +14,7 @@ from app.data.repo.setting_repo import SettingRepo
 from app.data.repo.user_repo import UserRepo
 from app.data.repo.user_setting_repo import UserSettingRepo
 from app.service.auth_service import AuthService
+from app.service.cron_service import CronService
 from app.service.email_service_stub import StubEmailService
 from app.service.email_verification_service import EmailVerificationService
 from app.service.invitation_service import InvitationService
@@ -165,6 +166,11 @@ class Container(containers.DeclarativeContainer):
         summary_service=summary_service,
     )
 
+    cron_service = providers.Factory(
+        CronService,
+        session_repo=session_repo,
+    )
+
     plan_service = providers.Factory(PlanService, plan_repo=plan_repo)
 
     wiring_config = containers.WiringConfiguration(
@@ -180,5 +186,6 @@ class Container(containers.DeclarativeContainer):
             "app.api.route.subscription_route",
             "app.api.route.stripe_webhook_route",
             "app.api.route.invitation_route",
+            "app.api.route.cron_route",
         ]
     )
