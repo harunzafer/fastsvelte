@@ -34,6 +34,9 @@ class Settings(BaseSettings):
     stripe_webhook_secret: str
     invitation_expiry_days: int = 7
     google_client_id: str
+    # Cron Job related variables
+    cron_secret: str
+    cron_session_retention_days: int = 7
 
     model_config = ConfigDict(
         env_file=".env",

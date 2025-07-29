@@ -1,4 +1,5 @@
 from app.api.route.auth_route import router as auth_router
+from app.api.route.cron_route import router as cron_router
 from app.api.route.email_verification_route import router as email_verification_router
 from app.api.route.invitation_route import router as invitation_router
 from app.api.route.note_route import router as note_router
@@ -29,6 +30,7 @@ def include_all_routers(app: FastAPI):
     app.include_router(
         stripe_webhook_route, prefix="/webhooks", tags=["Stripe Webhook"]
     )
+    app.include_router(cron_router, prefix="/cron", tags=["Cron Job"])
     app.include_router(
         subscription_route, prefix="/subscription", tags=["Subscription"]
     )

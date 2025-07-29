@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timedelta, timezone
 
 from app.data.repo.base_repo import BaseRepo
 from app.model.session_model import Session
@@ -46,3 +46,13 @@ class SessionRepo(BaseRepo):
         WHERE user_id = $1
         """
         await self.execute(query, user_id)
+
+    async def delete_expired_older_than(self, days: int) -> int:
+        cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+        query = """
+            DELETE FROM fastsvelte.session
+            WHERE expires_at < $1 AND created_at < $1
+            RETURNING id
+        """
+        rows = await self.fetch_all(query, cutoff)
+        return len(rows)
