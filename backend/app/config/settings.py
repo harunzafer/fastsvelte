@@ -23,7 +23,7 @@ class Settings(BaseSettings):
         "helps professionals like you work more efficiently with modern tools."
     )
     mode: Literal["b2c", "b2b"] = "b2b"
-    environment: str = "dev"
+    environment: Literal["dev", "beta", "prod"] = "dev"
     db_url: str
     base_web_url: str = "http://localhost:5173"
     session_cookie_name: str = "session_id"
@@ -43,6 +43,14 @@ class Settings(BaseSettings):
         env_prefix="fs_",
         extra="ignore",  # allows extra env vars without failure
     )
+
+    @property
+    def cors_origins(self) -> list[str]:
+        return {
+            "dev": ["http://localhost:5173"],
+            "beta": ["https://app-beta.example.com"],
+            "prod": ["https://app.example.com"],
+        }.get(self.environment, [])
 
 
 # Load settings at app startup
