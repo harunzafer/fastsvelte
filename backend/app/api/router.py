@@ -4,6 +4,7 @@ from app.api.route.email_verification_route import router as email_verification_
 from app.api.route.invitation_route import router as invitation_router
 from app.api.route.note_route import router as note_router
 from app.api.route.password_route import router as password_router
+from app.api.route.ping_route import router as ping_router
 from app.api.route.plan_route import router as plan_router
 from app.api.route.setting_route import router as setting_router
 from app.api.route.stripe_webhook_route import router as stripe_webhook_route
@@ -38,3 +39,5 @@ def include_all_routers(app: FastAPI):
         app.include_router(
             invitation_router, prefix="/invitations", tags=["Invitations"]
         )
+
+    app.include_router(ping_router, prefix="", tags=["Ping"])
