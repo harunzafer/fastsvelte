@@ -7,3 +7,6 @@ bun.lockb
 
 # Miscellaneous
 static/
+
+# Ignore Orval-generated API files
+src/lib/api/gen/
