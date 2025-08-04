@@ -1,3 +1,5 @@
+import { InfoObject } from 'openapi3-ts/oas30';
+
 // web/orval.config.ts
 export default {
 	default: {
@@ -24,4 +26,3 @@ export default {
 		}
 	}
 };
-

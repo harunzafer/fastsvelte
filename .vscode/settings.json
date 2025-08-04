@@ -6,10 +6,21 @@
         "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.formatOnSave": true,
         "editor.formatOnSaveMode": "file",
-         "editor.codeActionsOnSave": {
-             "source.organizeImports": "always"
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "always"
         }
     },
+    "editor.formatOnSave": true,
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[svelte]": {
+        "editor.defaultFormatter": "svelte.svelte-vscode"
+    },
+    "prettier.enableDebugLogs": false,
     "files.exclude": {
         "**/node_modules/**": true,
         "**/__pycache__": true,

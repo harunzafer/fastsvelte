@@ -5,16 +5,15 @@
 	let result: string = 'loading...';
 
 	onMount(async () => {
-	console.log('🚀 About to call getPing()...');
-	try {
-		const res = await getPing(); // Orval-generated
-		console.log('✅ Ping result:', res);
-        result = res.data;
-	} catch (err) {
-		console.error('❌ Ping failed:', err);
-	}
-});
-
+		console.log('🚀 About to call getPing()...');
+		try {
+			const res = await getPing(); // Orval-generated
+			console.log('✅ Ping result:', res);
+			result = res.data;
+		} catch (err) {
+			console.error('❌ Ping failed:', err);
+		}
+	});
 </script>
 
 <h1>Ping Test</h1>
