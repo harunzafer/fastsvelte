@@ -5,9 +5,10 @@
  * OpenAPI spec version: 0.1.0
  */
 import type {
-  GetCurrentUser200,
   UpdateUserRequest,
-  UserResponse
+  UserResponse,
+  UserStatus,
+  UserWithRole
 } from './model';
 
 import { axiosInstance } from '../axios';
@@ -21,8 +22,19 @@ import { axiosInstance } from '../axios';
 export const getCurrentUser = (
     
  ) => {
-      return axiosInstance<GetCurrentUser200>(
+      return axiosInstance<UserWithRole>(
       {url: `/users/me`, method: 'GET'
+    },
+      );
+    }
+  /**
+ * @summary Get User Status Route
+ */
+export const getUserStatus = (
+    
+ ) => {
+      return axiosInstance<UserStatus>(
+      {url: `/users/status`, method: 'GET'
     },
       );
     }
@@ -51,5 +63,6 @@ export const listUsers = (
       );
     }
   export type GetCurrentUserResult = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>
+export type GetUserStatusResult = NonNullable<Awaited<ReturnType<typeof getUserStatus>>>
 export type UpdateUserInfoResult = NonNullable<Awaited<ReturnType<typeof updateUserInfo>>>
 export type ListUsersResult = NonNullable<Awaited<ReturnType<typeof listUsers>>>

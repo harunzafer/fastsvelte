@@ -1,12 +1,22 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="group/html">
 	<head>
 		<meta charset="utf-8" />
-		<link rel="icon" href="%sveltekit.assets%/favicon.svg" />
+		<link
+			href="%sveltekit.assets%/images/favicon-light.png"
+			media="(prefers-color-scheme: light)"
+			rel="icon"
+		/>
+		<link
+			href="%sveltekit.assets%/images/favicon-dark.png"
+			media="(prefers-color-scheme: dark)"
+			rel="icon"
+		/>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<script type="text/javascript" src="/js/prefetch-config.js"></script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
-		<div style="display: contents">%sveltekit.body%</div>
+		<div>%sveltekit.body%</div>
 	</body>
 </html>

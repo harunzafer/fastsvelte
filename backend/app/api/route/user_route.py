@@ -5,6 +5,7 @@ from app.model.user_model import (
     CurrentUser,
     UpdateUserRequest,
     UserResponse,
+    UserStatus,
     UserWithRole,
 )
 from app.service.onboarding_service import OnboardingService
@@ -15,20 +16,23 @@ from fastapi import APIRouter, Depends
 router = APIRouter()
 
 
-@router.get("/me", response_model=dict, operation_id="getCurrentUser")
-@inject
+@router.get("/me", response_model=UserWithRole, operation_id="getCurrentUser")
 async def get_current_user_route(
+    user: CurrentUser = Depends(min_role_required(Role.READONLY)),
+):
+    return UserWithRole.model_validate(user.model_dump())
+
+
+@router.get("/status", response_model=UserStatus, operation_id="getUserStatus")
+@inject
+async def get_user_status_route(
     user: CurrentUser = Depends(min_role_required(Role.READONLY)),
     onboarding_service: OnboardingService = Depends(
         Provide[Container.onboarding_service]
     ),
 ):
-    onboarding_status = await onboarding_service.get_status(user.organization_id)
-
-    return {
-        "user": UserWithRole.model_validate(user.model_dump()),
-        "first_seen_status": onboarding_status,
-    }
+    status = await onboarding_service.get_status(user.organization_id)
+    return UserStatus(first_seen_status=status)
 
 
 @router.post("/me/update", operation_id="updateUserInfo")

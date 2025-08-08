@@ -1,7 +1,10 @@
 <script lang="ts">
-	import '../app.css';
+	import ConfigProvider from '$lib/context/ConfigProvider.svelte';
+	import '$lib/styles/app.css';
 
 	let { children } = $props();
 </script>
 
-{@render children()}
+<ConfigProvider>
+	{@render children()}
+</ConfigProvider>

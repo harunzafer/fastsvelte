@@ -47,7 +47,7 @@ class Settings(BaseSettings):
     @property
     def cors_origins(self) -> list[str]:
         return {
-            "dev": ["http://localhost:5173"],
+            "dev": ["http://localhost:5173", "http://localhost:4173"],
             "beta": ["https://app-beta.example.com"],
             "prod": ["https://app.example.com"],
         }.get(self.environment, [])

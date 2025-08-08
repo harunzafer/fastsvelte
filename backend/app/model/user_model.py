@@ -71,6 +71,14 @@ class CreateUserRequest(BaseModel):
     last_name: Optional[str]
 
 
+class UserStatus(BaseModel):
+    first_seen_status: str
+    # Future status fields can go here:
+    # trial_expires_at: Optional[str] = None
+    # subscription_status: Optional[str] = None
+    # feature_flags: Optional[dict] = None
+
+
 class UpdateUserRequest(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
