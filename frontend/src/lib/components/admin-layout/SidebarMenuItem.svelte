@@ -33,7 +33,7 @@
 </script>
 
 {#if isTitle}
-	<p class="menu-label px-2.5 pb-1.5 pt-3 first:pt-0">{label}</p>
+	<p class="menu-label px-2.5 pt-3 pb-1.5 first:pt-0">{label}</p>
 {:else if !children}
 	<a href={url ?? ''} class={`menu-item  ${selected && 'active'}`} {...linkProp}>
 		{#if icon}

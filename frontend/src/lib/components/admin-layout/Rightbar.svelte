@@ -87,7 +87,7 @@
 						class="rounded-box group relative cursor-pointer"
 						onclick={() => changeTheme('light')}
 					>
-						<div class="bg-base-200 rounded-box pb-3 pt-5 text-center">
+						<div class="bg-base-200 rounded-box pt-5 pb-3 text-center">
 							<div class="flex items-center justify-center gap-1">
 								<span class="rounded-box bg-primary h-6 w-2 sm:w-3"></span>
 								<span class="rounded-box bg-secondary h-6 w-2 sm:w-3"></span>
@@ -105,7 +105,7 @@
 						class="rounded-box group relative cursor-pointer"
 						onclick={() => changeTheme('contrast')}
 					>
-						<div class="bg-base-200 rounded-box pb-3 pt-5 text-center">
+						<div class="bg-base-200 rounded-box pt-5 pb-3 text-center">
 							<div class="flex items-center justify-center gap-1">
 								<span class="rounded-box bg-primary h-6 w-2 sm:w-3"></span>
 								<span class="rounded-box bg-secondary h-6 w-2 sm:w-3"></span>
@@ -123,7 +123,7 @@
 						class="rounded-box group relative cursor-pointer"
 						onclick={() => changeTheme('material')}
 					>
-						<div class="bg-base-200 rounded-box pb-3 pt-5 text-center">
+						<div class="bg-base-200 rounded-box pt-5 pb-3 text-center">
 							<div class="flex items-center justify-center gap-1">
 								<span class="rounded-box bg-primary h-6 w-2 sm:w-3"></span>
 								<span class="rounded-box bg-secondary h-6 w-2 sm:w-3"></span>
@@ -142,7 +142,7 @@
 						class="rounded-box group relative cursor-pointer"
 						onclick={() => changeTheme('dark')}
 					>
-						<div class="bg-base-200 rounded-box pb-3 pt-5 text-center">
+						<div class="bg-base-200 rounded-box pt-5 pb-3 text-center">
 							<div class="flex items-center justify-center gap-1">
 								<span class="rounded-box bg-primary h-6 w-2 sm:w-3"></span>
 								<span class="rounded-box bg-secondary h-6 w-2 sm:w-3"></span>
@@ -161,7 +161,7 @@
 						class="rounded-box group relative cursor-pointer"
 						onclick={() => changeTheme('dim')}
 					>
-						<div class="bg-base-200 rounded-box pb-3 pt-5 text-center">
+						<div class="bg-base-200 rounded-box pt-5 pb-3 text-center">
 							<div class="flex items-center justify-center gap-1">
 								<span class="rounded-box bg-primary h-6 w-2 sm:w-3"></span>
 								<span class="rounded-box bg-secondary h-6 w-2 sm:w-3"></span>
@@ -180,7 +180,7 @@
 						class="rounded-box group relative cursor-pointer"
 						onclick={() => changeTheme('material-dark')}
 					>
-						<div class="bg-base-200 rounded-box pb-3 pt-5 text-center">
+						<div class="bg-base-200 rounded-box pt-5 pb-3 text-center">
 							<div class="flex items-center justify-center gap-1">
 								<span class="rounded-box bg-primary h-6 w-2 sm:w-3"></span>
 								<span class="rounded-box bg-secondary h-6 w-2 sm:w-3"></span>
@@ -198,7 +198,7 @@
 						class="rounded-box group relative cursor-pointer"
 						onclick={() => changeTheme('system')}
 					>
-						<div class="bg-base-200 rounded-box pb-3 pt-5 text-center">
+						<div class="bg-base-200 rounded-box pt-5 pb-3 text-center">
 							<div class="flex items-center justify-center gap-1">
 								<span class="rounded-box bg-primary h-6 w-2 sm:w-3"></span>
 								<span class="rounded-box bg-secondary h-6 w-2 sm:w-3"></span>
@@ -213,7 +213,7 @@
 					</div>
 				</div>
 				<div
-					class="pointer-events-none opacity-50 group-data-[theme=contrast]/html:pointer-events-auto group-data-[theme=light]/html:pointer-events-auto group-data-[theme=contrast]/html:opacity-100 group-data-[theme=light]/html:opacity-100"
+					class="pointer-events-none opacity-50 group-data-[theme=contrast]/html:pointer-events-auto group-data-[theme=contrast]/html:opacity-100 group-data-[theme=light]/html:pointer-events-auto group-data-[theme=light]/html:opacity-100"
 				>
 					<p class="mt-6 font-medium">
 						Sidebar

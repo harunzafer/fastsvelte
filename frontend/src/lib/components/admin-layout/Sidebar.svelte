@@ -67,7 +67,7 @@
 		? 'dark'
 		: undefined}
 >
-	<div class="flex h-16 min-h-16 items-center justify-between gap-3 pe-4 ps-5">
+	<div class="flex h-16 min-h-16 items-center justify-between gap-3 ps-5 pe-4">
 		<a href="/dashboards/ecommerce">
 			<Logo />
 		</a>
@@ -77,10 +77,10 @@
 			class="btn btn-circle btn-ghost btn-sm text-base-content/50 relative max-lg:hidden"
 		>
 			<span
-				class="iconify lucide--panel-left-close size-4.5 absolute opacity-100 transition-all duration-300 group-has-[[id=layout-sidebar-hover-trigger]:checked]/html:opacity-0"
+				class="iconify lucide--panel-left-close absolute size-4.5 opacity-100 transition-all duration-300 group-has-[[id=layout-sidebar-hover-trigger]:checked]/html:opacity-0"
 			/>
 			<span
-				class="iconify lucide--panel-left-dashed size-4.5 absolute opacity-0 transition-all duration-300 group-has-[[id=layout-sidebar-hover-trigger]:checked]/html:opacity-100"
+				class="iconify lucide--panel-left-dashed absolute size-4.5 opacity-0 transition-all duration-300 group-has-[[id=layout-sidebar-hover-trigger]:checked]/html:opacity-100"
 			/>
 		</label>
 	</div>
@@ -94,7 +94,7 @@
 			</div>
 		</div>
 		<div
-			class="from-base-100/60 bg-linear-to-t pointer-events-none absolute bottom-0 end-0 start-0 h-7 to-transparent"
+			class="from-base-100/60 pointer-events-none absolute start-0 end-0 bottom-0 h-7 bg-linear-to-t to-transparent"
 		></div>
 	</div>
 
@@ -116,7 +116,7 @@
 					Components
 				</p>
 				<i
-					class="iconify lucide--chevron-right text-secondary size-4.5 ms-auto transition-all duration-300 group-hover:text-white"
+					class="iconify lucide--chevron-right text-secondary ms-auto size-4.5 transition-all duration-300 group-hover:text-white"
 				></i>
 			</div>
 		</a>
