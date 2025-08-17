@@ -1,5 +1,5 @@
 import type { ClientInit } from '@sveltejs/kit';
-import { ensureAuthenticated } from '$lib/util/session';
+import { ensureAuthenticated } from '$lib/auth/session';
 
 export const init: ClientInit = async () => {
 	// Check authentication immediately on SPA startup

@@ -5,4 +5,8 @@
 // For environment-specific configuration, use settings.ts.
 
 export const LOGIN_PATH = '/login';
+export const REGISTER_PATH = '/signup';
+export const FORGOT_PASSWORD_PATH = '/forgot-password';
+export const VERIFY_EMAIL_PATH = '/verify-email';
+export const RESET_PASSWORD_PATH = '/reset-password';
 export const DASHBOARD_PATH = '/'; // app.example.com/

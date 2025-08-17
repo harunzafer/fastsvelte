@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { authStore } from '$lib/store/auth.svelte';
+	import { authStore } from '$lib/auth/auth.svelte';
 
 	// Mock data for user dashboard
 	let userStats = $state({
