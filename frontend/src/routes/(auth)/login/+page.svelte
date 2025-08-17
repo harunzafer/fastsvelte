@@ -2,29 +2,48 @@
 	import Logo from '$lib/components/Logo.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { z } from 'zod';
-	import { useFormValidation } from './useFormValidation.svelte';
+	import { useFormValidation } from '$lib/util/useFormValidation.svelte';
 	import { login } from '$lib/api/gen/authentication';
 	import { goto } from '$app/navigation';
-	import { DASHBOARD_PATH } from '$lib/config/constants';
+	import {
+		DASHBOARD_PATH,
+		FORGOT_PASSWORD_PATH,
+		REGISTER_PATH,
+		VERIFY_EMAIL_PATH
+	} from '$lib/config/constants';
+	import { onMount } from 'svelte';
+	import { page } from '$app/state';
 
 	let showPassword = $state(false);
 	let loading = $state(false);
 	let apiError = $state('');
+	let showVerificationSuccess = $state(false);
+	let showPasswordResetSuccess = $state(false);
+
+	onMount(() => {
+		// Check if user came from email verification
+		const verified = page.url.searchParams.get('verified');
+		if (verified === 'true') {
+			showVerificationSuccess = true;
+		}
+
+		// Check if user came from password reset
+		const message = page.url.searchParams.get('message');
+		if (message === 'password-reset-success') {
+			showPasswordResetSuccess = true;
+		}
+	});
 
 	const schema = z.object({
-		email: z.string().email('Enter a valid email'),
-		password: z.string().min(6, 'Password must be at least 6 characters'),
-		agreement: z.boolean().refine((val) => val, {
-			message: 'Accept terms to continue'
-		})
+		email: z.email('Invalid email address'),
+		password: z.string().min(6, 'Password must be at least 6 characters')
 	});
 
 	const { formData, errors, handleChange, handleSubmit } = useFormValidation({
 		schema,
 		initialValues: {
 			email: '',
-			password: '',
-			agreement: false
+			password: ''
 		}
 	});
 
@@ -36,7 +55,10 @@
 				const res = await login({ email: data.email, password: data.password });
 				goto(DASHBOARD_PATH); // redirect on success
 			} catch (err: any) {
-				if (err?.response?.status === 401) {
+				if (err?.response?.data?.code === 'EMAIL_NOT_VERIFIED') {
+					// Redirect to verification page with email
+					goto(`${VERIFY_EMAIL_PATH}?email=${encodeURIComponent(data.email)}`);
+				} else if (err?.response?.status === 401) {
 					apiError = 'Invalid email or password.';
 				} else {
 					apiError = 'Login failed. Please try again later.';
@@ -57,10 +79,19 @@
 	</div>
 
 	<h3 class="mt-8 text-center text-xl font-semibold md:mt-12 lg:mt-24">Login</h3>
-	<h3 class="text-base-content/70 mt-2 text-center text-sm">
-		Seamless Access, Secure Connection: Your Gateway to a Personalized Experience.
-	</h3>
-	<div class="mt-6 md:mt-10">
+	{#if showVerificationSuccess}
+		<div class="alert alert-success mt-3">
+			<span class="iconify lucide--check-circle size-5"></span>
+			<span>Email verified successfully! You can now log in to your account.</span>
+		</div>
+	{/if}
+	{#if showPasswordResetSuccess}
+		<div class="alert alert-success mt-3">
+			<span class="iconify lucide--check-circle size-5"></span>
+			<span>Password reset successfully! You can now log in with your new password.</span>
+		</div>
+	{/if}
+	<div class="mt-5 md:mt-3">
 		<fieldset class="fieldset">
 			<legend class="fieldset-legend">Email Address</legend>
 			<label class="input w-full focus:outline-0">
@@ -118,32 +149,10 @@
 		</fieldset>
 
 		<div class="text-end">
-			<a class="label-text text-base-content/80 text-xs" href="/auth/forgot-password">
+			<a class="label-text text-base-content/80 text-xs" href={FORGOT_PASSWORD_PATH}>
 				Forgot Password?
 			</a>
 		</div>
-
-		<div class="mt-4 flex items-center gap-3 md:mt-6">
-			<input
-				aria-label="Agreement"
-				class="checkbox checkbox-sm checkbox-primary"
-				id="agreement"
-				name="agreement"
-				type="checkbox"
-				bind:checked={formData.agreement}
-				onchange={handleChange}
-				data-error={errors.agreement ? true : undefined}
-				data-testid="agreement"
-			/>
-			<label class="text-sm" for="agreement">
-				I agree with
-				<span class="text-primary ms-1 cursor-pointer hover:underline">terms and conditions</span>
-			</label>
-		</div>
-
-		{#if errors.agreement}
-			<p class="text-error text-sm">{errors.agreement}</p>
-		{/if}
 
 		<button
 			type="submit"
@@ -169,7 +178,7 @@
 
 		<p class="text-base-content/80 mt-4 text-center text-sm md:mt-6">
 			Haven&apos;t account
-			<a class="text-primary ms-1 hover:underline" href="/"> Create One </a>
+			<a class="text-primary ms-1 hover:underline" href={REGISTER_PATH}> Create One </a>
 		</p>
 	</div>
 </form>

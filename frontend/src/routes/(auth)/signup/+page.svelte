@@ -1,392 +1,237 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { authStore } from '$lib/store/auth.svelte';
-	import { validateCurrentUser } from '$lib/util/session';
-	import { signup as registerUser } from '$lib/api/gen/authentication';
+	import Logo from '$lib/components/Logo.svelte';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { z } from 'zod';
+	import { useFormValidation } from '$lib/util/useFormValidation.svelte';
+	import { signup } from '$lib/api/gen/authentication'; // Assuming this exists
+	import { goto } from '$app/navigation';
+	import { DASHBOARD_PATH, VERIFY_EMAIL_PATH } from '$lib/config/constants';
 
-	let firstName = $state('');
-	let lastName = $state('');
-	let email = $state('');
-	let password = $state('');
-	let confirmPassword = $state('');
-	let isLoading = $state(false);
-	let errors: Record<string, string> = $state({});
+	let showPassword = $state(false);
+	let loading = $state(false);
+	let apiError = $state('');
 
-	// Zod validation schema
-	const signupSchema = z
-		.object({
-			firstName: z.string().min(1, 'First name is required'),
-			lastName: z.string().min(1, 'Last name is required'),
-			email: z.email({ message: 'Invalid email address' }),
-			password: z
-				.string()
-				.min(1, 'Password is required')
-				.min(6, 'Password must be at least 6 characters'),
-			confirmPassword: z.string().min(1, 'Please confirm your password')
+	const schema = z.object({
+		firstName: z.string().min(1, 'First name is required'),
+		lastName: z.string().min(1, 'Last name is required'),
+		email: z.email('Invalid email address'),
+		password: z.string().min(6, 'Password must be at least 6 characters'),
+		agreement: z.boolean().refine((val) => val, {
+			message: 'Accept terms to continue'
 		})
-		.refine((data) => data.password === data.confirmPassword, {
-			message: "Passwords don't match",
-			path: ['confirmPassword']
-		});
+	});
 
-	// // Redirect if already authenticated
-	// $effect(() => {
-	// 	if (authStore.isAuthenticated) {
-	// 		goto('/');
-	// 	}
-	// });
+	const { formData, errors, handleChange, handleSubmit } = useFormValidation({
+		schema,
+		initialValues: {
+			firstName: '',
+			lastName: '',
+			email: '',
+			password: '',
+			agreement: false
+		}
+	});
 
-	function validateForm() {
-		errors = {};
-
-		try {
-			signupSchema.parse({ firstName, lastName, email, password, confirmPassword });
-			return true;
-		} catch (error) {
-			if (error instanceof z.ZodError) {
-				error.issues.forEach((err) => {
-					if (err.path[0]) {
-						errors[err.path[0] as string] = err.message;
-					}
+	const submitSignup = async (e: Event) => {
+		handleSubmit(e, async (data) => {
+			loading = true;
+			apiError = '';
+			try {
+				const res = await signup({
+					email: data.email,
+					password: data.password,
+					first_name: data.firstName,
+					last_name: data.lastName
 				});
-			}
-			return false;
-		}
-	}
-
-	async function handleSignup(event: SubmitEvent) {
-		event.preventDefault();
-
-		// Clear previous errors
-		errors = {};
-
-		// Validate form
-		if (!validateForm()) {
-			return;
-		}
-
-		isLoading = true;
-
-		try {
-			// Step 1: Register user
-			await registerUser({
-				email,
-				password,
-				first_name: firstName,
-				last_name: lastName
-			});
-
-			// Step 2: Get full user data after successful registration
-			const success = await validateCurrentUser();
-
-			if (success && authStore.user) {
-				// Redirect to dashboard
-				goto('/');
-			} else {
-				errors.general = 'Registration succeeded but failed to get user data';
-			}
-		} catch (err) {
-			console.error('Signup failed:', err);
-			errors.general = err.response?.data?.detail || 'Registration failed. Please try again.';
-		} finally {
-			isLoading = false;
-		}
-	}
-
-	function handleKeydown(event: KeyboardEvent) {
-		if (event.key === 'Enter') {
-			handleSignup(event);
-		}
-	}
-
-	// Real-time validation functions
-	function handleFirstNameBlur() {
-		try {
-			signupSchema.shape.firstName.parse(firstName);
-			if (errors.firstName) {
-				const { firstName: _, ...rest } = errors;
-				errors = rest;
-			}
-		} catch (error) {
-			if (error instanceof z.ZodError) {
-				errors.firstName = error.errors[0]?.message || 'Invalid first name';
-			}
-		}
-	}
-
-	function handleLastNameBlur() {
-		try {
-			signupSchema.shape.lastName.parse(lastName);
-			if (errors.lastName) {
-				const { lastName: _, ...rest } = errors;
-				errors = rest;
-			}
-		} catch (error) {
-			if (error instanceof z.ZodError) {
-				errors.lastName = error.errors[0]?.message || 'Invalid last name';
-			}
-		}
-	}
-
-	function handleEmailBlur() {
-		try {
-			signupSchema.shape.email.parse(email);
-			if (errors.email) {
-				const { email: _, ...rest } = errors;
-				errors = rest;
-			}
-		} catch (error) {
-			if (error instanceof z.ZodError) {
-				errors.email = error.errors[0]?.message || 'Invalid email';
-			}
-		}
-	}
-
-	function handlePasswordBlur() {
-		try {
-			signupSchema.shape.password.parse(password);
-			if (errors.password) {
-				const { password: _, ...rest } = errors;
-				errors = rest;
-			}
-		} catch (error) {
-			if (error instanceof z.ZodError) {
-				errors.password = error.errors[0]?.message || 'Invalid password';
-			}
-		}
-	}
-
-	function handleConfirmPasswordBlur() {
-		try {
-			signupSchema.parse({ firstName, lastName, email, password, confirmPassword });
-			if (errors.confirmPassword) {
-				const { confirmPassword: _, ...rest } = errors;
-				errors = rest;
-			}
-		} catch (error) {
-			if (error instanceof z.ZodError) {
-				const confirmPasswordError = error.errors.find((err) => err.path[0] === 'confirmPassword');
-				if (confirmPasswordError) {
-					errors.confirmPassword = confirmPasswordError.message;
+				// After successful signup, redirect to email verification page
+				goto(VERIFY_EMAIL_PATH + `?email=${encodeURIComponent(data.email)}`);
+			} catch (err: any) {
+				if (err?.response?.status === 400) {
+					apiError = 'Invalid data. Please check your inputs.';
+				} else if (err?.response?.status === 409) {
+					apiError = 'An account with this email already exists.';
+				} else {
+					apiError = 'Registration failed. Please try again later.';
 				}
+			} finally {
+				loading = false;
 			}
-		}
-	}
-
-	function handleGoogleSignup() {
-		// TODO: Implement Google OAuth signup
-		console.log('Google signup clicked');
-	}
+		});
+	};
 </script>
 
-<svelte:head>
-	<title>Sign Up - FastSvelte</title>
-</svelte:head>
-
-<div class="bg-base-200 flex min-h-screen items-center justify-center p-4">
-	<div class="card bg-base-100 w-full max-w-md shadow-xl">
-		<div class="card-body">
-			<!-- Header -->
-			<div class="mb-6 text-center">
-				<h1 class="text-3xl font-bold">Create Account</h1>
-				<p class="text-base-content/60 mt-2">Sign up to get started</p>
-			</div>
-
-			<!-- General Error Alert -->
-			{#if errors.general}
-				<div class="alert alert-error mb-4">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						class="h-6 w-6 shrink-0 stroke-current"
-						fill="none"
-						viewBox="0 0 24 24"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-						/>
-					</svg>
-					<span>{errors.general}</span>
-				</div>
-			{/if}
-
-			<!-- Signup Form -->
-			<form onsubmit={handleSignup}>
-				<!-- Name Fields -->
-				<div class="mb-4 grid grid-cols-2 gap-4">
-					<!-- First Name -->
-					<div class="form-control">
-						<label class="label" for="firstName">
-							<span class="label-text">First Name</span>
-						</label>
-						<input
-							id="firstName"
-							type="text"
-							placeholder="First name"
-							class="input input-bordered w-full"
-							class:input-error={errors.firstName}
-							bind:value={firstName}
-							onblur={handleFirstNameBlur}
-							onkeydown={handleKeydown}
-							disabled={isLoading}
-							required
-						/>
-						{#if errors.firstName}
-							<div class="label">
-								<span class="label-text-alt text-error">{errors.firstName}</span>
-							</div>
-						{/if}
-					</div>
-
-					<!-- Last Name -->
-					<div class="form-control">
-						<label class="label" for="lastName">
-							<span class="label-text">Last Name</span>
-						</label>
-						<input
-							id="lastName"
-							type="text"
-							placeholder="Last name"
-							class="input input-bordered w-full"
-							class:input-error={errors.lastName}
-							bind:value={lastName}
-							onblur={handleLastNameBlur}
-							onkeydown={handleKeydown}
-							disabled={isLoading}
-							required
-						/>
-						{#if errors.lastName}
-							<div class="label">
-								<span class="label-text-alt text-error">{errors.lastName}</span>
-							</div>
-						{/if}
-					</div>
-				</div>
-
-				<!-- Email Input -->
-				<div class="form-control mb-4">
-					<label class="label" for="email">
-						<span class="label-text">Email</span>
-					</label>
-					<input
-						id="email"
-						type="email"
-						placeholder="Enter your email"
-						class="input input-bordered w-full"
-						class:input-error={errors.email}
-						bind:value={email}
-						onblur={handleEmailBlur}
-						onkeydown={handleKeydown}
-						disabled={isLoading}
-						required
-					/>
-					{#if errors.email}
-						<div class="label">
-							<span class="label-text-alt text-error">{errors.email}</span>
-						</div>
-					{/if}
-				</div>
-
-				<!-- Password Input -->
-				<div class="form-control mb-4">
-					<label class="label" for="password">
-						<span class="label-text">Password</span>
-					</label>
-					<input
-						id="password"
-						type="password"
-						placeholder="Create a password"
-						class="input input-bordered w-full"
-						class:input-error={errors.password}
-						bind:value={password}
-						onblur={handlePasswordBlur}
-						onkeydown={handleKeydown}
-						disabled={isLoading}
-						required
-					/>
-					{#if errors.password}
-						<div class="label">
-							<span class="label-text-alt text-error">{errors.password}</span>
-						</div>
-					{/if}
-				</div>
-
-				<!-- Confirm Password Input -->
-				<div class="form-control mb-6">
-					<label class="label" for="confirmPassword">
-						<span class="label-text">Confirm Password</span>
-					</label>
-					<input
-						id="confirmPassword"
-						type="password"
-						placeholder="Confirm your password"
-						class="input input-bordered w-full"
-						class:input-error={errors.confirmPassword}
-						bind:value={confirmPassword}
-						onblur={handleConfirmPasswordBlur}
-						onkeydown={handleKeydown}
-						disabled={isLoading}
-						required
-					/>
-					{#if errors.confirmPassword}
-						<div class="label">
-							<span class="label-text-alt text-error">{errors.confirmPassword}</span>
-						</div>
-					{/if}
-				</div>
-
-				<!-- Submit Button -->
-				<button
-					type="submit"
-					class="btn btn-primary w-full"
-					class:loading={isLoading}
-					disabled={isLoading}
-				>
-					{isLoading ? 'Creating Account...' : 'Create Account'}
-				</button>
-			</form>
-
-			<!-- Divider -->
-			<div class="divider">OR</div>
-
-			<!-- Google Signup Button -->
-			<button
-				type="button"
-				class="btn btn-outline mb-4 w-full"
-				onclick={handleGoogleSignup}
-				disabled={isLoading}
-			>
-				<svg class="mr-2 h-5 w-5" viewBox="0 0 24 24">
-					<path
-						fill="#4285F4"
-						d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-					/>
-					<path
-						fill="#34A853"
-						d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-					/>
-					<path
-						fill="#FBBC05"
-						d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-					/>
-					<path
-						fill="#EA4335"
-						d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-					/>
-				</svg>
-				Continue with Google
-			</button>
-
-			<!-- Sign In Link -->
-			<div class="text-center">
-				<p class="text-base-content/60">
-					Already have an account?
-					<a href="/login" class="link link-primary">Sign in</a>
-				</p>
-			</div>
-		</div>
+<form onsubmit={submitSignup} novalidate class="flex flex-col items-stretch p-6 md:p-8 lg:p-16">
+	<div class="flex items-center justify-between">
+		<a href="/dashboards/ecommerce">
+			<Logo />
+		</a>
+		<ThemeToggle class="btn btn-circle btn-outline border-base-300" />
 	</div>
-</div>
+
+	<h3 class="mt-8 text-center text-xl font-semibold md:mt-12 lg:mt-24">Register</h3>
+	<h3 class="text-base-content/70 mt-2 text-center text-sm">
+		Seamless Access, Secure Connection: Your Gateway to a Personalized Experience.
+	</h3>
+	<div class="mt-6 md:mt-10">
+		<div class="grid grid-cols-1 gap-x-4 xl:grid-cols-2">
+			<fieldset class="fieldset">
+				<legend class="fieldset-legend">First Name</legend>
+				<label class="input w-full focus:outline-0">
+					<span class="iconify lucide--user text-base-content/80 size-5"></span>
+					<input
+						class="grow focus:outline-0"
+						placeholder="First Name"
+						name="firstName"
+						type="text"
+						bind:value={formData.firstName}
+						oninput={handleChange}
+						data-error={errors.firstName ? true : undefined}
+					/>
+				</label>
+				<p
+					class="text-error hidden text-sm data-error:block"
+					data-error={errors.firstName ? true : undefined}
+				>
+					{errors.firstName}
+				</p>
+			</fieldset>
+			<fieldset class="fieldset">
+				<legend class="fieldset-legend">Last Name</legend>
+				<label class="input w-full focus:outline-0">
+					<span class="iconify lucide--user text-base-content/80 size-5"></span>
+					<input
+						class="grow focus:outline-0"
+						placeholder="Last Name"
+						name="lastName"
+						type="text"
+						bind:value={formData.lastName}
+						oninput={handleChange}
+						data-error={errors.lastName ? true : undefined}
+					/>
+				</label>
+				<p
+					class="text-error hidden text-sm data-error:block"
+					data-error={errors.lastName ? true : undefined}
+				>
+					{errors.lastName}
+				</p>
+			</fieldset>
+		</div>
+
+		<!-- Username field commented out as requested -->
+		<!-- 
+		<fieldset class="fieldset">
+			<legend class="fieldset-legend">Username</legend>
+			<label class="input w-full focus:outline-0">
+				<span class="iconify lucide--user-square text-base-content/80 size-5"></span>
+				<input class="grow focus:outline-0" placeholder="Username" type="text" />
+			</label>
+		</fieldset>
+		-->
+
+		<fieldset class="fieldset">
+			<legend class="fieldset-legend">Email Address</legend>
+			<label class="input w-full focus:outline-0">
+				<span class="iconify lucide--mail text-base-content/80 size-5"></span>
+				<input
+					class="grow focus:outline-0"
+					placeholder="Email Address"
+					name="email"
+					type="email"
+					bind:value={formData.email}
+					oninput={handleChange}
+					data-error={errors.email ? true : undefined}
+				/>
+			</label>
+			<p
+				class="text-error hidden text-sm data-error:block"
+				data-error={errors.email ? true : undefined}
+			>
+				{errors.email}
+			</p>
+		</fieldset>
+
+		<fieldset class="fieldset">
+			<legend class="fieldset-legend">Password</legend>
+			<label class="input w-full focus:outline-0">
+				<span class="iconify lucide--key-round text-base-content/80 size-5"></span>
+				<input
+					class="grow focus:outline-0"
+					placeholder="Password"
+					name="password"
+					type={showPassword ? 'text' : 'password'}
+					bind:value={formData.password}
+					oninput={handleChange}
+					data-error={errors.password ? true : undefined}
+				/>
+				<button
+					aria-label="Password"
+					class="btn btn-xs btn-ghost btn-circle"
+					onclick={() => (showPassword = !showPassword)}
+					type="button"
+				>
+					{#if showPassword}
+						<span class="iconify lucide--eye-off size-4"></span>
+					{:else}
+						<span class="iconify lucide--eye size-4"></span>
+					{/if}
+				</button>
+			</label>
+			<p
+				class="text-error hidden text-sm data-error:block"
+				data-error={errors.password ? true : undefined}
+			>
+				{errors.password}
+			</p>
+		</fieldset>
+
+		<div class="mt-4 flex items-center gap-3 md:mt-6">
+			<input
+				aria-label="Agreement"
+				class="checkbox checkbox-sm checkbox-primary"
+				id="agreement"
+				name="agreement"
+				type="checkbox"
+				bind:checked={formData.agreement}
+				onchange={handleChange}
+				data-error={errors.agreement ? true : undefined}
+				data-testid="agreement"
+			/>
+			<label class="text-sm" for="agreement">
+				I agree with
+				<span class="text-primary ms-1 cursor-pointer hover:underline">terms and conditions</span>
+			</label>
+		</div>
+
+		{#if errors.agreement}
+			<p class="text-error text-sm">{errors.agreement}</p>
+		{/if}
+
+		<button
+			type="submit"
+			class="btn btn-primary btn-wide mt-4 max-w-full gap-3 md:mt-6"
+			disabled={loading}
+		>
+			{#if loading}
+				<span class="loading loading-dots loading-sm"></span>
+			{:else}
+				<span class="iconify lucide--user-plus size-4"></span>
+				Register
+			{/if}
+		</button>
+
+		{#if apiError}
+			<p class="text-error mt-2 animate-pulse text-center text-sm">{apiError}</p>
+		{/if}
+
+		<button class="btn btn-ghost btn-wide border-base-300 mt-4 max-w-full gap-3" type="button">
+			<img alt="" class="size-6" src="/images/brand-logo/google-mini.svg" />
+			Register with Google
+		</button>
+
+		<p class="text-base-content/80 mt-4 text-center text-sm md:mt-6">
+			I have already to
+			<a class="text-primary ms-1 hover:underline" href="/login">Login</a>
+		</p>
+	</div>
+</form>

@@ -5,9 +5,8 @@
 	import Topbar from '$lib/components/admin-layout/Topbar.svelte';
 	import { onMount } from 'svelte';
 	import { adminMenuItems } from './menu';
-	import { ensureAuthenticated } from '$lib/util/session';
-	import { afterNavigate } from '$app/navigation';
-	import { authStore } from '$lib/store/auth.svelte';
+	import { ensureAuthenticated } from '$lib/auth/session';
+	import { authStore } from '$lib/auth/auth.svelte';
 
 	let { children } = $props();
 

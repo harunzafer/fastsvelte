@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { authStore } from '$lib/store/auth.svelte';
-	import { ensureAuthenticated } from '$lib/util/session';
 	import { DASHBOARD_PATH } from '$lib/config/constants';
+	import { ensureAuthenticated } from '$lib/auth/session';
+	import { authStore } from '$lib/auth/auth.svelte';
 
 	let { children } = $props();
 

@@ -26,8 +26,8 @@
 import Axios from 'axios';
 import { PUBLIC_API_BASE_URL } from '$env/static/public';
 import { browser } from '$app/environment';
-import { authStore } from '$lib/store/auth.svelte';
 import { LOGIN_PATH } from '$lib/config/constants';
+import { authStore } from '$lib/auth/auth.svelte';
 
 export const axiosInstance = Axios.create({
 	baseURL: PUBLIC_API_BASE_URL,

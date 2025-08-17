@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { authStore } from '$lib/store/auth.svelte';
-	import { logout } from '$lib/util/session';
+	import { authStore } from '$lib/auth/auth.svelte';
+	import { logout } from '$lib/auth/session';
 
 	const handleLogout = async () => {
 		try {

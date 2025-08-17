@@ -2,9 +2,15 @@
 import { goto } from '$app/navigation';
 import { logout as logoutUser } from '$lib/api/gen/authentication';
 import { getCurrentUser } from '$lib/api/gen/users';
-import { LOGIN_PATH } from '$lib/config/constants';
+import {
+	FORGOT_PASSWORD_PATH,
+	LOGIN_PATH,
+	REGISTER_PATH,
+	RESET_PASSWORD_PATH,
+	VERIFY_EMAIL_PATH
+} from '$lib/config/constants';
 import { AUTH_CHECK_EXPIRES_MS } from '$lib/config/settings';
-import { authStore } from '$lib/store/auth.svelte';
+import { authStore } from './auth.svelte';
 
 // Track when we last successfully verified authentication to avoid excessive API calls
 let lastSuccessfulCheck = 0;
@@ -40,7 +46,14 @@ export async function validateCurrentUser(): Promise<boolean> {
 		authStore.clear();
 
 		// Redirect to login if not already there (avoid redirect loops)
-		if (!window.location.pathname.startsWith(LOGIN_PATH)) {
+		if (
+			!window.location.pathname.startsWith(LOGIN_PATH) &&
+			!window.location.pathname.startsWith(REGISTER_PATH) &&
+			!window.location.pathname.startsWith(VERIFY_EMAIL_PATH) &&
+			!window.location.pathname.startsWith(FORGOT_PASSWORD_PATH) &&
+			!window.location.pathname.startsWith(RESET_PASSWORD_PATH)
+		) {
+			console.warn('Authentication failed, redirecting to login');
 			window.location.href = LOGIN_PATH;
 		}
 
