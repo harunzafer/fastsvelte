@@ -1,6 +1,9 @@
 # Keep nexus-svelte theme local only
 nexus-svelte/
 
+# Project documentation (keep local)
+CLAUDE.md
+
 # Environment files
 .env
 .env.local

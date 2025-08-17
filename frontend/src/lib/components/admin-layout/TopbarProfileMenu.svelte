@@ -46,7 +46,7 @@
 		</div>
 		<div class="drawer-side">
 			<label for="topbar-profile-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-			<div class="sm:w-84 h-full w-72 p-2">
+			<div class="h-full w-72 p-2 sm:w-84">
 				<div class="bg-base-100 rounded-box relative flex h-full flex-col pt-4 sm:pt-8">
 					<label
 						for="topbar-profile-drawer"
@@ -64,7 +64,7 @@
 								<img src="/images/avatars/1.png" alt="User Avatar" />
 							</div>
 							<div
-								class="bg-base-100 absolute bottom-0 end-0 flex items-center justify-center rounded-full p-1.5 shadow-sm"
+								class="bg-base-100 absolute end-0 bottom-0 flex items-center justify-center rounded-full p-1.5 shadow-sm"
 							>
 								<span class="iconify lucide--pencil size-4" />
 							</div>
@@ -148,7 +148,7 @@
 					</div>
 
 					<div
-						class="rounded-box from-primary to-secondary text-primary-content bg-linear-to-br m-4 mt-auto flex cursor-pointer flex-col items-center justify-center p-4 text-center transition-all hover:opacity-95 sm:p-6"
+						class="rounded-box from-primary to-secondary text-primary-content m-4 mt-auto flex cursor-pointer flex-col items-center justify-center bg-linear-to-br p-4 text-center transition-all hover:opacity-95 sm:p-6"
 					>
 						<div
 							class="bg-primary-content/10 border-primary-content/10 flex items-center justify-center rounded-full border p-1.5 sm:p-2.5"
@@ -156,11 +156,11 @@
 							<span class="iconify lucide--zap size-5 sm:size-6" />
 						</div>
 						<p
-							class="mt-2 font-mono text-[11px] font-medium uppercase tracking-wider opacity-70 sm:mt-4"
+							class="mt-2 font-mono text-[11px] font-medium tracking-wider uppercase opacity-70 sm:mt-4"
 						>
 							Upgrade your plan
 						</p>
-						<p class="mt-1 font-medium leading-none sm:text-lg">
+						<p class="mt-1 leading-none font-medium sm:text-lg">
 							Save <span class="font-semibold underline">30%</span> today
 						</p>
 					</div>

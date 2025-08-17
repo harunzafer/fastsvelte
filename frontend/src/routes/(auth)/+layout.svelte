@@ -31,7 +31,7 @@
 		<div class="absolute inset-0 flex items-center justify-center">
 			<img src="/images/auth/auth-hero.png" class="object-cover" alt="Authentication hero" />
 		</div>
-		<div class="animate-bounce-2 absolute bottom-[15%] right-[20%]">
+		<div class="animate-bounce-2 absolute right-[20%] bottom-[15%]">
 			<div class="card bg-base-100/80 w-64 backdrop-blur-lg">
 				<div class="card-body p-5">
 					<div class="flex flex-col items-center justify-center">

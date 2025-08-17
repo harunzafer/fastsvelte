@@ -210,3 +210,5 @@ Always follow the following rules when helping me:
 7. Always use `list` instead of `List` from typing. Same for other types.
 8. Always use IF NOT EXISTS and IF EXISTS where appropriate for our SQL migration scripts.
 9. Our repositories should always return pydantic models or primitive types but we never return dictionaries.
+10. Never mention Claude or Claude Code in commit messages - keep them professional and focused on the changes made.
+11. Always run `npm run format` in the frontend directory before committing to ensure code passes Prettier formatting checks in CI/CD pipeline.

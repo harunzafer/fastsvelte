@@ -26,7 +26,7 @@
 		if (verified === 'true') {
 			showVerificationSuccess = true;
 		}
-		
+
 		// Check if user came from password reset
 		const message = page.url.searchParams.get('message');
 		if (message === 'password-reset-success') {
@@ -107,7 +107,7 @@
 				/>
 			</label>
 			<p
-				class="text-error data-error:block hidden text-sm"
+				class="text-error hidden text-sm data-error:block"
 				data-error={errors.email ? true : undefined}
 			>
 				{errors.email}
@@ -141,7 +141,7 @@
 				</button>
 			</label>
 			<p
-				class="text-error data-error:block hidden text-sm"
+				class="text-error hidden text-sm data-error:block"
 				data-error={errors.password ? true : undefined}
 			>
 				{errors.password}
