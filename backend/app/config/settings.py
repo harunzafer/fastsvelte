@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     environment: Literal["dev", "beta", "prod"] = "dev"
     db_url: str
     base_web_url: str = "http://localhost:5173"
+    base_api_url: str = "http://localhost:8000"
     session_cookie_name: str = "session_id"
     session_cookie_max_age: int = 60 * 60 * 24  # 1 day
     session_refresh_threshold: int = int(session_cookie_max_age * 0.5)
@@ -34,6 +35,8 @@ class Settings(BaseSettings):
     stripe_webhook_secret: str
     invitation_expiry_days: int = 7
     google_client_id: str
+    google_client_secret: str
+    jwt_secret_key: str
     # Cron Job related variables
     cron_secret: str
     cron_session_retention_days: int = 7

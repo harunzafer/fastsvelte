@@ -4,6 +4,7 @@
 	import { z } from 'zod';
 	import { useFormValidation } from '$lib/util/useFormValidation.svelte';
 	import { login } from '$lib/api/gen/authentication';
+	import { initiateGoogleOAuth, checkOAuthError } from '$lib/auth/oauth/google';
 	import { goto } from '$app/navigation';
 	import {
 		DASHBOARD_PATH,
@@ -19,6 +20,7 @@
 	let apiError = $state('');
 	let showVerificationSuccess = $state(false);
 	let showPasswordResetSuccess = $state(false);
+	let oauthError = $state('');
 
 	onMount(() => {
 		// Check if user came from email verification
@@ -31,6 +33,12 @@
 		const message = page.url.searchParams.get('message');
 		if (message === 'password-reset-success') {
 			showPasswordResetSuccess = true;
+		}
+
+		// Check for OAuth errors
+		const oauthErrorMessage = checkOAuthError(page.url.searchParams);
+		if (oauthErrorMessage) {
+			oauthError = oauthErrorMessage;
 		}
 	});
 
@@ -68,6 +76,12 @@
 			}
 		});
 	};
+
+	const handleGoogleLogin = () =>
+		initiateGoogleOAuth(
+			(error) => (apiError = error),
+			(isLoading) => (loading = isLoading)
+		);
 </script>
 
 <form onsubmit={submitLogin} novalidate class="flex flex-col items-stretch p-6 md:p-8 lg:p-16">
@@ -89,6 +103,12 @@
 		<div class="alert alert-success mt-3">
 			<span class="iconify lucide--check-circle size-5"></span>
 			<span>Password reset successfully! You can now log in with your new password.</span>
+		</div>
+	{/if}
+	{#if oauthError}
+		<div class="alert alert-warning mt-3">
+			<span class="iconify lucide--alert-triangle size-5"></span>
+			<span>{oauthError}</span>
 		</div>
 	{/if}
 	<div class="mt-5 md:mt-3">
@@ -171,7 +191,12 @@
 			<p class="text-error mt-2 animate-pulse text-center text-sm">{apiError}</p>
 		{/if}
 
-		<button class="btn btn-ghost btn-wide border-base-300 mt-4 max-w-full gap-3">
+		<button
+			type="button"
+			class="btn btn-ghost btn-wide border-base-300 mt-4 max-w-full gap-3"
+			onclick={handleGoogleLogin}
+			disabled={loading}
+		>
 			<img alt="" class="size-6" src="/images/brand-logo/google-mini.svg" />
 			Login with Google
 		</button>

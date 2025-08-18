@@ -36,7 +36,7 @@ class CurrentUser(UserWithRole):
 
 class CreateUser(BaseModel):
     email: EmailStr
-    password_hash: str
+    password_hash: Optional[str] = None
     first_name: Optional[str]
     last_name: Optional[str]
     organization_id: int

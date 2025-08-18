@@ -3,8 +3,10 @@ asyncpg
 dependency-injector
 fastapi[standard]
 google-auth
+google-auth-oauthlib
 openai
 pydantic_settings
+pyjwt
 pytest
 python-dateutil
 ruff

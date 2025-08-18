@@ -200,3 +200,23 @@ class UserRepo(BaseRepo):
             ON CONFLICT DO NOTHING
         """
         await self.execute(query, user_id, provider_id, provider_user_id)
+
+    async def update_user_avatar_if_null(self, user_id: int, avatar_url: str) -> bool:
+        """
+        Update user's avatar URL only if current avatar_url is NULL.
+        
+        Args:
+            user_id: User ID to update
+            avatar_url: New avatar URL from OAuth provider
+            
+        Returns:
+            bool: True if avatar was updated, False if already had avatar
+        """
+        query = """
+            UPDATE fastsvelte."user"
+            SET avatar_url = $2, updated_at = NOW()
+            WHERE id = $1 AND avatar_url IS NULL
+        """
+        result = await self.execute(query, user_id, avatar_url)
+        # Returns True if a row was updated (avatar was NULL), False if no update (avatar already exists)
+        return result.split()[-1] == "1" if result else False
