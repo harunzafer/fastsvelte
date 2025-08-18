@@ -95,7 +95,7 @@ class AuthService:
         # We still catch UniqueViolationError as a safeguard against race conditions.
         existing = await self.user_repo.get_user_by_email(data.email)
         if existing:
-            raise EmailAlreadyExists("Email is already in use")
+            raise EmailAlreadyExists()
 
         password_hash = hash_password(data.password)
 
@@ -123,7 +123,7 @@ class AuthService:
         try:
             user_id, org_id = await self.user_repo.execute_transaction(tx)
         except asyncpg.UniqueViolationError:
-            raise EmailAlreadyExists("Email is already in use")  # fallback safeguard
+            raise EmailAlreadyExists()  # fallback safeguard
         except Exception as ex:
             logger.error(ex)
             raise SignupFailed()
@@ -138,7 +138,7 @@ class AuthService:
     async def signup_org(self, data: SignupOrgRequest) -> SignupResult:
         existing = await self.user_repo.get_user_by_email(data.email)
         if existing:
-            raise EmailAlreadyExists("Email is already in use")
+            raise EmailAlreadyExists()
 
         password_hash = hash_password(data.password)
 
@@ -161,7 +161,7 @@ class AuthService:
         try:
             user_id = await self.user_repo.execute_transaction(tx)
         except asyncpg.UniqueViolationError:
-            raise EmailAlreadyExists("Email is already in use")
+            raise EmailAlreadyExists()
         except Exception as ex:
             logger.error(ex)
             raise SignupFailed()
