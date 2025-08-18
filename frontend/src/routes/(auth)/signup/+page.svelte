@@ -60,10 +60,11 @@
 		});
 	};
 
-	const handleGoogleSignup = () => initiateGoogleOAuth(
-		(error) => apiError = error,
-		(isLoading) => loading = isLoading
-	);
+	const handleGoogleSignup = () =>
+		initiateGoogleOAuth(
+			(error) => (apiError = error),
+			(isLoading) => (loading = isLoading)
+		);
 </script>
 
 <form onsubmit={submitSignup} novalidate class="flex flex-col items-stretch p-6 md:p-8 lg:p-16">
@@ -230,7 +231,7 @@
 			<p class="text-error mt-2 animate-pulse text-center text-sm">{apiError}</p>
 		{/if}
 
-		<button 
+		<button
 			type="button"
 			class="btn btn-ghost btn-wide border-base-300 mt-4 max-w-full gap-3"
 			onclick={handleGoogleSignup}

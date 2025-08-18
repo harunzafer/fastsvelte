@@ -77,10 +77,11 @@
 		});
 	};
 
-	const handleGoogleLogin = () => initiateGoogleOAuth(
-		(error) => apiError = error,
-		(isLoading) => loading = isLoading
-	);
+	const handleGoogleLogin = () =>
+		initiateGoogleOAuth(
+			(error) => (apiError = error),
+			(isLoading) => (loading = isLoading)
+		);
 </script>
 
 <form onsubmit={submitLogin} novalidate class="flex flex-col items-stretch p-6 md:p-8 lg:p-16">
@@ -126,7 +127,7 @@
 				/>
 			</label>
 			<p
-				class="text-error data-error:block hidden text-sm"
+				class="text-error hidden text-sm data-error:block"
 				data-error={errors.email ? true : undefined}
 			>
 				{errors.email}
@@ -160,7 +161,7 @@
 				</button>
 			</label>
 			<p
-				class="text-error data-error:block hidden text-sm"
+				class="text-error hidden text-sm data-error:block"
 				data-error={errors.password ? true : undefined}
 			>
 				{errors.password}
