@@ -4,7 +4,9 @@
  * FastAPI
  * OpenAPI spec version: 0.1.0
  */
+import type { OAuthLoginRequestState } from './oAuthLoginRequestState';
 
 export interface OAuthLoginRequest {
-  id_token: string;
+  code: string;
+  state?: OAuthLoginRequestState;
 }

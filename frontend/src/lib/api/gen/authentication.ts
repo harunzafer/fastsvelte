@@ -5,8 +5,10 @@
  * OpenAPI spec version: 0.1.0
  */
 import type {
+  GoogleOAuthCallbackParams,
   LoginRequest,
   LoginSuccess,
+  OAuthAuthorizationResponse,
   OAuthLoginRequest,
   SignupOrgRequest,
   SignupRequest,
@@ -58,6 +60,29 @@ export const login = (
       );
     }
   /**
+ * @summary Get Google Auth Url
+ */
+export const getGoogleAuthUrl = (
+    
+ ) => {
+      return axiosInstance<OAuthAuthorizationResponse>(
+      {url: `/auth/oauth/google/authorize-url`, method: 'GET'
+    },
+      );
+    }
+  /**
+ * @summary Google Oauth Callback
+ */
+export const googleOAuthCallback = (
+    params: GoogleOAuthCallbackParams,
+ ) => {
+      return axiosInstance<unknown>(
+      {url: `/auth/oauth/google/callback`, method: 'GET',
+        params
+    },
+      );
+    }
+  /**
  * @summary Login With Google
  */
 export const loginWithGoogle = (
@@ -84,5 +109,7 @@ export const logout = (
   export type SignupResult = NonNullable<Awaited<ReturnType<typeof signup>>>
 export type SignupOrgResult = NonNullable<Awaited<ReturnType<typeof signupOrg>>>
 export type LoginResult = NonNullable<Awaited<ReturnType<typeof login>>>
+export type GetGoogleAuthUrlResult = NonNullable<Awaited<ReturnType<typeof getGoogleAuthUrl>>>
+export type GoogleOAuthCallbackResult = NonNullable<Awaited<ReturnType<typeof googleOAuthCallback>>>
 export type LoginWithGoogleResult = NonNullable<Awaited<ReturnType<typeof loginWithGoogle>>>
 export type LogoutResult = NonNullable<Awaited<ReturnType<typeof logout>>>

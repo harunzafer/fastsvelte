@@ -40,4 +40,9 @@ class ResendVerificationRequest(BaseModel):
 
 
 class OAuthLoginRequest(BaseModel):
-    id_token: str
+    code: str
+    state: Optional[str] = None
+
+
+class OAuthAuthorizationResponse(BaseModel):
+    authorization_url: str

@@ -3,7 +3,8 @@
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { z } from 'zod';
 	import { useFormValidation } from '$lib/util/useFormValidation.svelte';
-	import { signup } from '$lib/api/gen/authentication'; // Assuming this exists
+	import { signup } from '$lib/api/gen/authentication';
+	import { initiateGoogleOAuth } from '$lib/auth/oauth/google';
 	import { goto } from '$app/navigation';
 	import { DASHBOARD_PATH, VERIFY_EMAIL_PATH } from '$lib/config/constants';
 
@@ -58,6 +59,11 @@
 			}
 		});
 	};
+
+	const handleGoogleSignup = () => initiateGoogleOAuth(
+		(error) => apiError = error,
+		(isLoading) => loading = isLoading
+	);
 </script>
 
 <form onsubmit={submitSignup} novalidate class="flex flex-col items-stretch p-6 md:p-8 lg:p-16">
@@ -224,7 +230,12 @@
 			<p class="text-error mt-2 animate-pulse text-center text-sm">{apiError}</p>
 		{/if}
 
-		<button class="btn btn-ghost btn-wide border-base-300 mt-4 max-w-full gap-3" type="button">
+		<button 
+			type="button"
+			class="btn btn-ghost btn-wide border-base-300 mt-4 max-w-full gap-3"
+			onclick={handleGoogleSignup}
+			disabled={loading}
+		>
 			<img alt="" class="size-6" src="/images/brand-logo/google-mini.svg" />
 			Register with Google
 		</button>

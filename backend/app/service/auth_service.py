@@ -187,16 +187,36 @@ class AuthService:
 
         return User(**user_with_pw.model_dump())
 
-    async def login_with_google(self, id_token_str: str) -> User:
+    async def login_with_google(self, auth_code: str) -> User:
         try:
+            # Exchange authorization code for tokens
+            import httpx
+
+            token_url = "https://oauth2.googleapis.com/token"
+            redirect_uri = f"{settings.base_api_url}/auth/oauth/google/callback"
+
+            token_data = {
+                "client_id": settings.google_client_id,
+                "client_secret": settings.google_client_secret,
+                "code": auth_code,
+                "grant_type": "authorization_code",
+                "redirect_uri": redirect_uri,
+            }
+
+            async with httpx.AsyncClient() as client:
+                token_response = await client.post(token_url, data=token_data)
+                token_response.raise_for_status()
+                tokens = token_response.json()
+
+            # Verify the ID token
             id_info = id_token.verify_oauth2_token(
-                id_token_str,
+                tokens["id_token"],
                 google_requests.Request(),
                 audience=settings.google_client_id,
             )
         except Exception as e:
-            logger.warning(f"Invalid Google ID token: {e}")
-            raise SignupFailed("Invalid ID token")
+            logger.warning(f"OAuth token exchange failed: {e}")
+            raise SignupFailed("OAuth authentication failed")
 
         provider_id = "google"
         provider_user_id = id_info["sub"]
@@ -205,11 +225,29 @@ class AuthService:
         last_name = id_info.get("family_name", "")
         avatar_url = id_info.get("picture")
 
-        existing_user = await self.user_repo.get_user_by_oauth(
+        existing_oauth_user = await self.user_repo.get_user_by_oauth(
             provider_id, provider_user_id
         )
-        if existing_user:
-            return existing_user
+        if existing_oauth_user:
+            return existing_oauth_user
+
+        # Check if a user already exists with this email (password-based account)
+        existing_email_user = await self.user_repo.get_user_by_email(email)
+        if existing_email_user:
+            # Link OAuth account to existing user instead of creating new user
+            try:
+                await self.user_repo.create_oauth_account(
+                    existing_email_user.id, provider_id, provider_user_id
+                )
+                # Update user profile with OAuth data if missing
+                if avatar_url:
+                    await self.user_repo.update_user_avatar_if_null(existing_email_user.id, avatar_url)
+                
+                logger.info(f"Linked OAuth account to existing user: {email}")
+                return existing_email_user
+            except Exception as e:
+                logger.error(f"Failed to link OAuth account to existing user: {e}")
+                raise SignupFailed("Failed to link Google account to existing user")
 
         async def tx(conn):
             org_name = f"{email}'s Organization"
