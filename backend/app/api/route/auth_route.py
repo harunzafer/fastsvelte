@@ -24,7 +24,12 @@ from app.model.user_model import (
 from app.service.auth_service import AuthService
 from app.service.onboarding_service import OnboardingService
 from app.util.cookie_util import clear_session_cookie, set_session_cookie
-from app.util.oauth_util import generate_oauth_state, validate_oauth_state, OAuthStateError
+from app.util.oauth_util import (
+    OAuthStateError,
+    generate_oauth_state,
+    map_oauth_error,
+    validate_oauth_state,
+)
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.responses import RedirectResponse
@@ -111,7 +116,6 @@ async def login(
     operation_id="getGoogleAuthUrl",
 )
 async def get_google_auth_url():
-    # Google will callback to our backend, not frontend
     redirect_url = f"{settings.base_api_url}/auth/oauth/google/callback"
 
     # Generate secure state parameter for CSRF protection
@@ -149,27 +153,17 @@ async def google_oauth_callback(
     # Handle OAuth errors (user cancelled, access denied, etc.)
     if error:
         logger.info(f"OAuth error: {error}")
-        error_messages = {
-            "access_denied": "oauth_cancelled",
-            "invalid_request": "oauth_invalid_request", 
-            "unauthorized_client": "oauth_unauthorized",
-            "unsupported_response_type": "oauth_unsupported",
-            "invalid_scope": "oauth_invalid_scope",
-            "server_error": "oauth_server_error",
-            "temporarily_unavailable": "oauth_unavailable"
-        }
-        error_code = error_messages.get(error, "oauth_error")
+        error_code = map_oauth_error(error)
         return RedirectResponse(
-            url=f"{settings.base_web_url}/login?error={error_code}",
-            status_code=302
+            url=f"{settings.base_web_url}/login?error={error_code}", status_code=302
         )
-    
+
     # Validate required code parameter
     if not code:
         logger.warning("OAuth callback missing authorization code")
         return RedirectResponse(
             url=f"{settings.base_web_url}/login?error=oauth_missing_code",
-            status_code=302
+            status_code=302,
         )
 
     # Validate state parameter for CSRF protection
@@ -179,9 +173,9 @@ async def google_oauth_callback(
         logger.warning(f"OAuth state validation failed: {e}")
         return RedirectResponse(
             url=f"{settings.base_web_url}/login?error=oauth_invalid_state",
-            status_code=302
+            status_code=302,
         )
-    
+
     try:
         user: User = await auth_service.login_with_google(code)
 
@@ -218,7 +212,6 @@ async def google_oauth_callback(
         return RedirectResponse(
             url=f"{settings.base_web_url}/login?error=oauth_failed", status_code=302
         )
-
 
 
 @router.post(
