@@ -15,7 +15,7 @@ from app.data.repo.user_repo import UserRepo
 from app.data.repo.user_setting_repo import UserSettingRepo
 from app.service.auth_service import AuthService
 from app.service.cron_service import CronService
-from app.service.email_service_stub import StubEmailService
+from app.service.email_service_factory import create_email_service
 from app.service.email_verification_service import EmailVerificationService
 from app.service.invitation_service import InvitationService
 from app.service.note_service import NoteService
@@ -118,7 +118,7 @@ class Container(containers.DeclarativeContainer):
         setting_repo=setting_repo,
     )
 
-    email_service = providers.Singleton(StubEmailService)
+    email_service = providers.Singleton(create_email_service)
     email_verification_service = providers.Factory(
         EmailVerificationService,
         email_service=email_service,
