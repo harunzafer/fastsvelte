@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
@@ -40,6 +40,18 @@ class Settings(BaseSettings):
     # Cron Job related variables
     cron_secret: str
     cron_session_retention_days: int = 7
+
+    # Email service configuration
+    email_provider: Literal["stub", "azure", "sendgrid"] = "sendgrid"
+
+    # Azure Email Service settings
+    azure_email_connection_string: Optional[str] = None
+    azure_email_sender_address: Optional[str] = None
+
+    # SendGrid Email Service settings
+    sendgrid_api_key: Optional[str] = None
+    sendgrid_sender_address: Optional[str] = None
+    sendgrid_sender_name: Optional[str] = None
 
     model_config = ConfigDict(
         env_file=".env",

@@ -1,5 +1,6 @@
 argon2-cffi
 asyncpg
+azure-communication-email
 dependency-injector
 fastapi[standard]
 google-auth
@@ -9,5 +10,6 @@ pydantic_settings
 pyjwt
 pytest
 python-dateutil
+sendgrid
 ruff
 stripe
