@@ -1,12 +1,12 @@
 from app.data.repo.note_repo import NoteRepo
 from app.model.note_model import CreateNoteRequest, Note, UpdateNoteRequest
-from app.service.summary_service import SummaryService
+from app.service.note_organizer_service import NoteOrganizerService
 
 
 class NoteService:
-    def __init__(self, note_repo: NoteRepo, summary_service: SummaryService):
+    def __init__(self, note_repo: NoteRepo, note_organizer_service: NoteOrganizerService):
         self.note_repo = note_repo
-        self.summary_service = summary_service
+        self.note_organizer_service = note_organizer_service
 
     async def create_note(self, user_id: int, data: CreateNoteRequest) -> Note:
         return await self.note_repo.create_note(user_id, data.title, data.content)
@@ -27,8 +27,9 @@ class NoteService:
     async def delete_note(self, user_id: int, note_id: int) -> None:
         await self.note_repo.delete_note(note_id, user_id)
 
-    async def summarize_note(self, user_id: int, note_id: int) -> str | None:
+    async def organize_note(self, user_id: int, note_id: int) -> Note | None:
         note = await self.get_note(user_id, note_id)
         if not note:
             return None
-        return await self.summary_service.summarize(note.content)
+        improved_content = await self.note_organizer_service.organize_and_improve(note.content)
+        return await self.note_repo.update_note(note_id, user_id, note.title, improved_content)

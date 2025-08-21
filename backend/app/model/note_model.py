@@ -31,5 +31,5 @@ class NoteResponse(BaseModel):
     updated_at: datetime
 
 
-class NoteSummary(BaseModel):
-    summary: str
+class NoteImprovement(BaseModel):
+    improved_content: str
