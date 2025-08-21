@@ -20,15 +20,16 @@
 		>
 			<span class="iconify lucide--menu size-5"></span>
 		</label>
-		<TopbarSearchButton />
+		<!-- <TopbarSearchButton /> -->
 	</div>
 	<div class="inline-flex items-center gap-0.5">
-		<TopbarLanguageMenu />
+		<!-- <TopbarLanguageMenu /> -->
 		<ThemeToggle class="btn btn-sm btn-circle btn-ghost" />
-		<label for="layout-rightbar-drawer" class="btn btn-circle btn-ghost btn-sm drawer-button">
+		<!-- Advanced setting button. To enable this also enable the <Rightbar /> in src/routes/(protected)/+layout.svelte -->
+		<!-- <label for="layout-rightbar-drawer" class="btn btn-circle btn-ghost btn-sm drawer-button">
 			<span class="iconify lucide--settings-2 size-4.5"></span>
-		</label>
-		<TopbarNotificationButton />
+		</label> -->
+		<!-- <TopbarNotificationButton /> -->
 		<TopbarProfileMenu />
 	</div>
 </div>

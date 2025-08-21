@@ -97,7 +97,14 @@ class SubscriptionService:
         email: str,
         full_name: str,
     ) -> None:
+        logger.info(
+            f"Provisioning free subscription for org_id={org_id}, email={email}, full_name={full_name}"
+        )
+        print(
+            f"Provisioning free subscription for org_id={org_id}, email={email}, full_name={full_name}"
+        )
         if await self.organization_plan_repo.has_active_plan(org_id):
+            logger.info(f"Organization {org_id} already has an active plan, skipping.")
             return
 
         default_plan = await self.plan_repo.get_default_plan()

@@ -90,6 +90,22 @@ async def get_invitation_status(
     return InvitationResponse.model_validate(invitation.model_dump())
 
 
+@router.delete("/{invitation_id}", operation_id="revokeInvitation")
+@inject
+async def revoke_invitation(
+    invitation_id: int,
+    user: CurrentUser = Depends(min_role_required(Role.ORG_ADMIN)),
+    invitation_service: InvitationService = Depends(
+        Provide[Container.invitation_service]
+    ),
+):
+    print(
+        f"Revoking invitation {invitation_id} for user {user.id}, organization {user.organization_id}"
+    )
+    await invitation_service.revoke_invitation(invitation_id, user.organization_id)
+    return {"message": "Invitation revoked"}
+
+
 @router.post("/accept", operation_id="acceptInvitation")
 @inject
 async def accept_invitation(

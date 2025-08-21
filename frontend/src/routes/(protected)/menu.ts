@@ -1,4 +1,5 @@
 import type { ISidebarMenuItem } from '$lib/components/admin-layout/SidebarMenuItem.svelte';
+import { APP_MODE } from '$lib/config/constants';
 
 export const adminMenuItems: ISidebarMenuItem[] = [
 	{
@@ -102,3 +103,21 @@ export const adminMenuItems: ISidebarMenuItem[] = [
 		minRole: 'sys_admin'
 	}
 ];
+
+// Filter out org-related menu items when in B2C mode
+export const getMenuItems = (): ISidebarMenuItem[] => {
+	if (APP_MODE === 'b2c') {
+		return adminMenuItems.filter(
+			(item) =>
+				![
+					'org_admin',
+					'org_users',
+					'organization',
+					'org-users',
+					'org-settings',
+					'org-plan'
+				].includes(item.id)
+		);
+	}
+	return adminMenuItems;
+};

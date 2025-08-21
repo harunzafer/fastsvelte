@@ -6,6 +6,7 @@
  */
 
 export type GoogleOAuthCallbackParams = {
-code: string;
+code?: string;
 state?: string;
+error?: string;
 };

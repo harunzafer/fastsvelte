@@ -1,0 +1,68 @@
+---[ fastsvelte.dev ]----------------------------------------------------
+
+- Update ChatGPT and Claude project files
+- Start with Frontend
+
+Web arayuzu ile backend'i de test ederek ve yeni seyler ekleyerek gidecegiz
+  - admin tools
+
+
+
+---[ Backlog ]--------------------------------------------------------
+
+- Bir ara container'a bak ve singleton vs factory kararini ver. su anda consistent degil
+- OAuth with Google
+- Setting Definition'da JSONB var ama setting'de TEXT var. JSON tipindeki setting'leri handle edemiyoruz su anda
+
+----------------------------------------------------------------------
+
+- In the backend handle the case email already exists. fix 500
+  - In the frontend handle this and show user.
+
+- Implement an email provider (Azure or a simpler one) [50 dk]
+
+-> LoggedIn user password reset flow?
+
+7- Invitations
+
+8- settings
+  - user and org
+
+9- pricing/plan/billing management
+
+10- Org admin tools
+
+11- Sys admin tools
+
+12- Landing page
+
+
+
+
+Brokerguard login'de kucuk bir problem olabilir incelememiz lazim
+
+  - Sanirim hatayi catch edip goto yapamiyoruz checkAuth icinde
+  - ama daha sonra onMount() icinde yaptigimiz calisiyor
+
+
+1- Login / Logout flow'u biraz test et ve anlamaya calis. Ve dokumante et.
+  - brokerguard ile bir farki var mi?
+
+  1. checkAuthStatus in hooks.client.ts
+  2. check for 401 in the centralized api and redirect
+  3. Debounce checkAuthStatus() for 10 seconds and use localStorage to support multiple tabs with "Backoff with Random Delay"
+  4.Use authStore.loading so we don't show unwanted content even for a small window of time
+
+2- Login field validation'i daha iyi yap. Tam altinda olsun
+
+3- Login'e google signup ekle
+
+
+
+1- Sali [auth tamamen bitece]
+2- Crs  [Panel entegrasyonu]
+3- Prs
+4- Cuma
+
+
+Absolu

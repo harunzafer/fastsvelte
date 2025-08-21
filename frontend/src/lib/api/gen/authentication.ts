@@ -9,7 +9,6 @@ import type {
   LoginRequest,
   LoginSuccess,
   OAuthAuthorizationResponse,
-  OAuthLoginRequest,
   SignupOrgRequest,
   SignupRequest,
   SignupSuccess
@@ -74,24 +73,11 @@ export const getGoogleAuthUrl = (
  * @summary Google Oauth Callback
  */
 export const googleOAuthCallback = (
-    params: GoogleOAuthCallbackParams,
+    params?: GoogleOAuthCallbackParams,
  ) => {
       return axiosInstance<unknown>(
       {url: `/auth/oauth/google/callback`, method: 'GET',
         params
-    },
-      );
-    }
-  /**
- * @summary Login With Google
- */
-export const loginWithGoogle = (
-    oAuthLoginRequest: OAuthLoginRequest,
- ) => {
-      return axiosInstance<LoginSuccess>(
-      {url: `/auth/oauth/google`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: oAuthLoginRequest
     },
       );
     }
@@ -111,5 +97,4 @@ export type SignupOrgResult = NonNullable<Awaited<ReturnType<typeof signupOrg>>>
 export type LoginResult = NonNullable<Awaited<ReturnType<typeof login>>>
 export type GetGoogleAuthUrlResult = NonNullable<Awaited<ReturnType<typeof getGoogleAuthUrl>>>
 export type GoogleOAuthCallbackResult = NonNullable<Awaited<ReturnType<typeof googleOAuthCallback>>>
-export type LoginWithGoogleResult = NonNullable<Awaited<ReturnType<typeof loginWithGoogle>>>
 export type LogoutResult = NonNullable<Awaited<ReturnType<typeof logout>>>

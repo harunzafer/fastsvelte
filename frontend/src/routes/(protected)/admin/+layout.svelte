@@ -12,7 +12,7 @@
 		await ensureAuthenticated('admin onMount');
 
 		// Then check role access (assuming 'admin' role name)
-		if (authStore.user?.role?.name !== 'admin') {
+		if (authStore.user?.role?.name !== 'sys_admin') {
 			console.log('admin access denied');
 			goto(DASHBOARD_PATH);
 		}
@@ -23,7 +23,7 @@
 	<div class="flex h-screen items-center justify-center">
 		<div class="loading loading-spinner loading-lg"></div>
 	</div>
-{:else if authStore.isAuthenticated && authStore.user?.role?.name === 'admin'}
+{:else if authStore.isAuthenticated && authStore.user?.role?.name === 'sys_admin'}
 	{@render children()}
 {:else}
 	<div class="flex h-screen items-center justify-center">

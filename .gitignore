@@ -4,6 +4,7 @@ nexus-svelte/
 # Project documentation (keep local)
 CLAUDE.md
 PROJECT_DOCS.md
+.notes
 
 # Environment files
 .env

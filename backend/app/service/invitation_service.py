@@ -5,6 +5,7 @@ from app.config.settings import settings
 from app.data.repo.invitation_repo import InvitationRepo
 from app.data.repo.organization_repo import OrganizationRepo
 from app.data.repo.user_repo import UserRepo
+from app.exception.auth_exception import EmailAlreadyExists
 from app.model.invitation_model import Invitation
 from app.model.user_model import CreateUser
 from app.util.hash_util import hash_password
@@ -28,6 +29,15 @@ class InvitationService:
         organization_id: int,
         created_by: int | None,
     ) -> tuple[Invitation, str]:
+        # Check if user already exists (and is active)
+        existing_user = await self.user_repo.get_user_by_email(email)
+        if existing_user and existing_user.deleted_at is None:
+            details = {
+                "email": email,
+                "same_organization": existing_user.organization_id == organization_id
+            }
+            raise EmailAlreadyExists(details=details)
+
         token = secrets.token_urlsafe(32)
         expires_at = datetime.now(timezone.utc) + timedelta(
             days=settings.invitation_expiry_days
