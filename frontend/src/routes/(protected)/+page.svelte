@@ -48,7 +48,6 @@
 			successMessage = 'Note organized and improved!';
 			showSuccess = true;
 		} catch (error) {
-
 			// Handle specific error types
 			if (
 				(error as any).response?.status === 403 &&

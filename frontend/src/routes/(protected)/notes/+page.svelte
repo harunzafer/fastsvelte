@@ -145,7 +145,6 @@
 				notes[noteIndex] = response.data;
 			}
 		} catch (error) {
-
 			// Handle specific error types
 			if (
 				(error as any).response?.status === 403 &&
