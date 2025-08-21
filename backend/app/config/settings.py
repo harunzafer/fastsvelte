@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     app_description: str = (
         "helps professionals like you work more efficiently with modern tools."
     )
-    mode: Literal["b2c", "b2b"] = "b2b"
+    mode: Literal["b2c", "b2b"] = "b2c"
     environment: Literal["dev", "beta", "prod"] = "dev"
     db_url: str
     base_web_url: str = "http://localhost:5173"

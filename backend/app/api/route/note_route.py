@@ -101,9 +101,9 @@ async def delete_note(
     )
 
 
-@router.post("/{note_id}/summarize", response_model=str, operation_id="summarizeNote")
+@router.post("/{note_id}/organize", response_model=NoteResponse, operation_id="organizeNote")
 @inject
-async def summarize_note(
+async def organize_note(
     note_id: int,
     user: CurrentUser = Depends(min_role_required(Role.MEMBER)),
     note_service: NoteService = Depends(Provide[Container.note_service]),
@@ -125,7 +125,7 @@ async def summarize_note(
     if not has_tokens:
         raise QuotaExceeded(FeatureKey.TOKEN_LIMIT, limit=None)
 
-    summary = await note_service.summarize_note(user.id, note_id)
+    organized_note = await note_service.organize_note(user.id, note_id)
 
     await usage_service.update_usage(
         organization_id=user.organization_id,
@@ -133,4 +133,4 @@ async def summarize_note(
         amount=estimated_tokens,
     )
 
-    return summary
+    return NoteResponse.model_validate(organized_note.model_dump())

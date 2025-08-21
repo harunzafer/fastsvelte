@@ -76,13 +76,13 @@ export const deleteNote = (
       );
     }
   /**
- * @summary Summarize Note
+ * @summary Organize Note
  */
-export const summarizeNote = (
+export const organizeNote = (
     noteId: number,
  ) => {
-      return axiosInstance<string>(
-      {url: `/notes/${noteId}/summarize`, method: 'POST'
+      return axiosInstance<NoteResponse>(
+      {url: `/notes/${noteId}/organize`, method: 'POST'
     },
       );
     }
@@ -91,4 +91,4 @@ export type CreateNoteResult = NonNullable<Awaited<ReturnType<typeof createNote>
 export type GetNoteResult = NonNullable<Awaited<ReturnType<typeof getNote>>>
 export type UpdateNoteResult = NonNullable<Awaited<ReturnType<typeof updateNote>>>
 export type DeleteNoteResult = NonNullable<Awaited<ReturnType<typeof deleteNote>>>
-export type SummarizeNoteResult = NonNullable<Awaited<ReturnType<typeof summarizeNote>>>
+export type OrganizeNoteResult = NonNullable<Awaited<ReturnType<typeof organizeNote>>>

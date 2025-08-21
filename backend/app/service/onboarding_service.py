@@ -1,8 +1,11 @@
+import logging
 from datetime import datetime, timedelta, timezone
 
 from app.data.repo.organization_plan_repo import OrganizationPlanRepo
 from app.data.repo.organization_repo import OrganizationRepo
 from app.service.subscription_service import SubscriptionService
+
+logger = logging.getLogger(__name__)
 
 
 class OnboardingService:
@@ -32,11 +35,18 @@ class OnboardingService:
         """
         org = await self.organization_repo.get_by_id(org_id)
 
+        print(
+            f"Running first seen onboarding for org_id={org_id}, email={email}, full_name={full_name}"
+        )
+
         if not org.first_seen_at:
             await self.organization_repo.set_first_seen_at(
                 org_id, datetime.now(timezone.utc)
             )
 
+        logger.info(
+            f"Running first seen onboarding for org_id={org_id}, email={email}, full_name={full_name}"
+        )
         await self.subscription_service.provision_free_subscription_if_needed(
             org_id=org.id,
             email=email,

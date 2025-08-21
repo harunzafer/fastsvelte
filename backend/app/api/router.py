@@ -7,6 +7,7 @@ from app.api.route.password_route import router as password_router
 from app.api.route.ping_route import router as ping_router
 from app.api.route.plan_route import router as plan_router
 from app.api.route.setting_route import router as setting_router
+from app.api.route.stats_route import router as stats_router
 from app.api.route.stripe_webhook_route import router as stripe_webhook_route
 from app.api.route.subscription_route import router as subscription_route
 from app.api.route.user_route import router as user_router
@@ -27,6 +28,7 @@ def include_all_routers(app: FastAPI):
     )
     app.include_router(note_router, prefix="/notes", tags=["Notes"])
     app.include_router(setting_router, prefix="/settings", tags=["Settings"])
+    app.include_router(stats_router, prefix="/stats", tags=["Statistics"])
     app.include_router(plan_router, prefix="/plan", tags=["Plan"])
     app.include_router(
         stripe_webhook_route, prefix="/webhooks", tags=["Stripe Webhook"]

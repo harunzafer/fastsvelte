@@ -27,7 +27,7 @@ from app.service.plan_service import PlanService
 from app.service.setting_service import SettingService
 from app.service.stripe_service import StripeService
 from app.service.subscription_service import SubscriptionService
-from app.service.summary_service import SummaryService
+from app.service.note_organizer_service import NoteOrganizerService
 from app.service.user_service import UserService
 from dependency_injector import containers, providers
 
@@ -140,8 +140,8 @@ class Container(containers.DeclarativeContainer):
         api_key=settings.openai_api_key,
     )
 
-    summary_service = providers.Factory(
-        SummaryService,
+    note_organizer_service = providers.Factory(
+        NoteOrganizerService,
         openai_service=openai_service,
     )
 
@@ -163,7 +163,7 @@ class Container(containers.DeclarativeContainer):
     note_service = providers.Factory(
         NoteService,
         note_repo=note_repo,
-        summary_service=summary_service,
+        note_organizer_service=note_organizer_service,
     )
 
     cron_service = providers.Factory(
@@ -187,5 +187,6 @@ class Container(containers.DeclarativeContainer):
             "app.api.route.stripe_webhook_route",
             "app.api.route.invitation_route",
             "app.api.route.cron_route",
+            "app.api.route.stats_route",
         ]
     )

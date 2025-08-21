@@ -4,7 +4,7 @@
 	import Sidebar from '$lib/components/admin-layout/Sidebar.svelte';
 	import Topbar from '$lib/components/admin-layout/Topbar.svelte';
 	import { onMount } from 'svelte';
-	import { adminMenuItems } from './menu';
+	import { getMenuItems } from './menu';
 	import { ensureAuthenticated } from '$lib/auth/session';
 	import { authStore } from '$lib/auth/auth.svelte';
 
@@ -24,14 +24,14 @@
 	<!-- Authenticated content -->
 	<div class="size-full">
 		<div class="flex">
-			<Sidebar menuItems={adminMenuItems} />
+			<Sidebar menuItems={getMenuItems()} />
 			<div class="flex h-screen min-w-0 grow flex-col overflow-auto">
 				<Topbar />
 				<div id="layout-content">{@render children()}</div>
-				<Footer />
+				<!-- <Footer /> -->
 			</div>
 		</div>
-		<Rightbar />
+		<!-- <Rightbar /> -->
 	</div>
 {:else}
 	<!-- Not authenticated - this shouldn't show since redirect happens -->

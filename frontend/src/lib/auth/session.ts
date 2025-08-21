@@ -4,11 +4,22 @@ import { logout as logoutUser } from '$lib/api/gen/authentication';
 import { getCurrentUser } from '$lib/api/gen/users';
 import {
 	FORGOT_PASSWORD_PATH,
+	INVITE_ACCEPT_PATH,
 	LOGIN_PATH,
 	REGISTER_PATH,
 	RESET_PASSWORD_PATH,
 	VERIFY_EMAIL_PATH
 } from '$lib/config/constants';
+
+// Paths that don't require authentication
+const PUBLIC_PATHS = [
+	LOGIN_PATH,
+	REGISTER_PATH,
+	VERIFY_EMAIL_PATH,
+	FORGOT_PASSWORD_PATH,
+	RESET_PASSWORD_PATH,
+	INVITE_ACCEPT_PATH
+];
 import { AUTH_CHECK_EXPIRES_MS } from '$lib/config/settings';
 import { authStore } from './auth.svelte';
 
@@ -45,14 +56,10 @@ export async function validateCurrentUser(): Promise<boolean> {
 		// Clear auth state on any authentication failure
 		authStore.clear();
 
-		// Redirect to login if not already there (avoid redirect loops)
-		if (
-			!window.location.pathname.startsWith(LOGIN_PATH) &&
-			!window.location.pathname.startsWith(REGISTER_PATH) &&
-			!window.location.pathname.startsWith(VERIFY_EMAIL_PATH) &&
-			!window.location.pathname.startsWith(FORGOT_PASSWORD_PATH) &&
-			!window.location.pathname.startsWith(RESET_PASSWORD_PATH)
-		) {
+		// Redirect to login if not already on a public path (avoid redirect loops)
+		const isOnPublicPath = PUBLIC_PATHS.some((path) => window.location.pathname.startsWith(path));
+
+		if (!isOnPublicPath) {
 			console.warn('Authentication failed, redirecting to login');
 			window.location.href = LOGIN_PATH;
 		}

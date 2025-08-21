@@ -75,8 +75,11 @@ class InvitationRepo(BaseRepo):
             DELETE FROM fastsvelte.invitation
             WHERE id = $1 AND organization_id = $2 AND accepted_at IS NULL
         """
-        await self.execute(query, invitation_id, organization_id)
-        return True
+        rows = await self.fetch_all(query, invitation_id, organization_id)
+        print(
+            f"Rows deleted: {len(rows)} for invitation_id: {invitation_id}, organization_id: {organization_id}"
+        )
+        return len(rows) > 0
 
     async def get_all_pending_invitations(self) -> list[Invitation]:
         query = """
