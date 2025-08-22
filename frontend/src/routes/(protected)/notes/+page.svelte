@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { listNotes, createNote, updateNote, deleteNote, organizeNote } from '$lib/api/gen/notes';
-	import type { NoteResponse, CreateNoteRequest, UpdateNoteRequest } from '$lib/api/gen/model';
+	import { listNotes, createNote, deleteNote } from '$lib/api/gen/notes';
+	import type { NoteResponse, CreateNoteRequest } from '$lib/api/gen/model';
 	import Alert from '$lib/components/Alert.svelte';
 
 	let notes = $state<NoteResponse[]>([]);
@@ -9,15 +9,10 @@
 	let loading = $state(true);
 	let searchQuery = $state('');
 	let showCreateModal = $state(false);
-	let editingNote = $state<NoteResponse | null>(null);
 	let deletingNote = $state<NoteResponse | null>(null);
-	let organizing = $state<Record<number, boolean>>({});
-	let errorMessage = $state('');
-	let showError = $state(false);
 
 	// Form states
 	let createForm = $state({ title: '', content: '' });
-	let editForm = $state({ title: '', content: '' });
 	let formErrors = $state<Record<string, string>>({});
 	let submitting = $state(false);
 
@@ -87,34 +82,6 @@
 		}
 	}
 
-	function openEditModal(note: NoteResponse) {
-		editingNote = note;
-		editForm = { title: note.title, content: note.content };
-		formErrors = {};
-	}
-
-	function closeEditModal() {
-		editingNote = null;
-		editForm = { title: '', content: '' };
-		formErrors = {};
-	}
-
-	async function handleEdit() {
-		if (!editingNote || !validateForm(editForm)) return;
-
-		submitting = true;
-		try {
-			await updateNote(editingNote.id, editForm as UpdateNoteRequest);
-			closeEditModal();
-			await loadNotes();
-		} catch (error) {
-			console.error('Failed to update note:', error);
-			formErrors.submit = 'Failed to update note. Please try again.';
-		} finally {
-			submitting = false;
-		}
-	}
-
 	function confirmDelete(note: NoteResponse) {
 		deletingNote = note;
 	}
@@ -132,38 +99,6 @@
 			await loadNotes();
 		} catch (error) {
 			console.error('Failed to delete note:', error);
-		}
-	}
-
-	async function handleOrganize(noteId: number) {
-		organizing[noteId] = true;
-		try {
-			const response = await organizeNote(noteId);
-			// Update the note in the notes array with the organized content
-			const noteIndex = notes.findIndex((note) => note.id === noteId);
-			if (noteIndex !== -1) {
-				notes[noteIndex] = response.data;
-			}
-		} catch (error) {
-			// Handle specific error types
-			if (
-				(error as any).response?.status === 403 &&
-				(error as any).response?.data?.code === 'QUOTA_EXCEEDED'
-			) {
-				const feature = (error as any).response.data.details?.feature_key;
-				if (feature === 'token_limit') {
-					errorMessage =
-						'Your current plan has reached the AI processing limit. Please upgrade your plan to continue using AI organization features.';
-				} else {
-					errorMessage =
-						'Your current plan does not support this feature. Please upgrade your plan to continue.';
-				}
-			} else {
-				errorMessage = 'Failed to organize note. Please try again later.';
-			}
-			showError = true;
-		} finally {
-			organizing[noteId] = false;
 		}
 	}
 
@@ -216,9 +151,6 @@
 		New Note
 	</button>
 </div>
-
-<!-- Error Alert -->
-<Alert type="error" message={errorMessage} bind:show={showError} autoDismiss={true} />
 
 <!-- Search Bar -->
 <div class="mb-6">
@@ -282,33 +214,9 @@
 
 					<div class="card-actions mt-4 justify-end">
 						<div class="flex gap-2">
-							<button
+							<a
+								href="/notes/{note.id}/edit"
 								class="btn btn-sm btn-ghost"
-								class:loading={organizing[note.id]}
-								disabled={organizing[note.id]}
-								onclick={() => handleOrganize(note.id)}
-								title="AI Organize & Improve"
-								aria-label="AI Organize & Improve"
-							>
-								{#if !organizing[note.id]}
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 24 24"
-										class="h-4 w-4 stroke-current"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke-width="2"
-											d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
-										></path>
-									</svg>
-								{/if}
-							</button>
-							<button
-								class="btn btn-sm btn-ghost"
-								onclick={() => openEditModal(note)}
 								title="Edit"
 								aria-label="Edit note"
 							>
@@ -325,7 +233,7 @@
 										d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
 									></path>
 								</svg>
-							</button>
+							</a>
 							<button
 								class="btn btn-sm btn-ghost text-error"
 								onclick={() => confirmDelete(note)}
@@ -418,77 +326,6 @@
 						disabled={submitting}
 					>
 						{submitting ? 'Creating...' : 'Create Note'}
-					</button>
-				</div>
-			</form>
-		</div>
-	</div>
-{/if}
-
-<!-- Edit Note Modal -->
-{#if editingNote}
-	<div class="modal modal-open">
-		<div class="modal-box">
-			<h3 class="mb-4 text-lg font-bold">Edit Note</h3>
-
-			<form
-				onsubmit={(e) => {
-					e.preventDefault();
-					handleEdit();
-				}}
-			>
-				<div class="form-control mb-4">
-					<label class="label" for="edit-title">
-						<span class="label-text">Title</span>
-					</label>
-					<input
-						id="edit-title"
-						type="text"
-						class="input input-bordered"
-						class:input-error={formErrors.title}
-						bind:value={editForm.title}
-						placeholder="Enter note title"
-					/>
-					{#if formErrors.title}
-						<label class="label">
-							<span class="label-text-alt text-error">{formErrors.title}</span>
-						</label>
-					{/if}
-				</div>
-
-				<div class="form-control mb-4">
-					<label class="label" for="edit-content">
-						<span class="label-text">Content</span>
-					</label>
-					<textarea
-						id="edit-content"
-						class="textarea textarea-bordered h-32"
-						class:textarea-error={formErrors.content}
-						bind:value={editForm.content}
-						placeholder="Enter note content"
-					></textarea>
-					{#if formErrors.content}
-						<label class="label">
-							<span class="label-text-alt text-error">{formErrors.content}</span>
-						</label>
-					{/if}
-				</div>
-
-				{#if formErrors.submit}
-					<div class="alert alert-error mb-4">
-						<span>{formErrors.submit}</span>
-					</div>
-				{/if}
-
-				<div class="modal-action">
-					<button type="button" class="btn btn-ghost" onclick={closeEditModal}>Cancel</button>
-					<button
-						type="submit"
-						class="btn btn-primary"
-						class:loading={submitting}
-						disabled={submitting}
-					>
-						{submitting ? 'Updating...' : 'Update Note'}
 					</button>
 				</div>
 			</form>
