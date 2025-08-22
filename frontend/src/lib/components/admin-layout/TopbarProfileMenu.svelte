@@ -33,7 +33,15 @@
 		<div tabindex="0" role="button" class="btn btn-ghost max-sm:btn-square gap-2 px-1.5">
 			<div class="avatar">
 				<div class="bg-base-200 mask mask-squircle w-8">
-					<img src="/images/avatars/1.png" alt="Avatar" />
+					{#if user.avatar_url}
+						<img src={user.avatar_url} alt="Avatar" />
+					{:else}
+						<div
+							class="bg-primary text-primary-content flex size-full items-center justify-center text-xs font-bold"
+						>
+							{(user.first_name?.[0] || '') + (user.last_name?.[0] || '')}
+						</div>
+					{/if}
 				</div>
 			</div>
 			<div class="text-start max-sm:hidden">
@@ -47,44 +55,28 @@
 			tabindex="0"
 			class="dropdown-content menu bg-base-100 rounded-box shadow-base-content/4 mt-1 w-64 p-2 shadow-[0px_10px_40px_0px]"
 		>
-			<li class="menu-title">Account</li>
+			<li class="menu-title">
+				<div class="flex flex-col">
+					<span>Account</span>
+					<span class="text-base-content/60 text-xs font-normal">{user.email}</span>
+				</div>
+			</li>
 			<li>
 				<a href="/profile">
 					<span class="iconify lucide--user size-4.5" />
-					<span>View Profile</span>
+					<span>Profile</span>
 				</a>
 			</li>
 			<li>
-				<a href="/team">
-					<span class="iconify lucide--users size-4.5" />
-					<span>Team</span>
-				</a>
-			</li>
-			<li>
-				<a href="/invites">
-					<span class="iconify lucide--mail-plus size-4.5" />
-					<span>Invites</span>
-					<div class="badge badge-sm">4</div>
-				</a>
-			</li>
-			<div class="divider my-1"></div>
-			<li class="menu-title">Platform</li>
-			<li>
-				<a href="/settings">
+				<a href="/settings/user">
 					<span class="iconify lucide--settings size-4.5" />
-					<span>Settings</span>
+					<span>User Preferences</span>
 				</a>
 			</li>
 			<li>
 				<a href="/billing">
 					<span class="iconify lucide--credit-card size-4.5" />
 					<span>Billing</span>
-				</a>
-			</li>
-			<li>
-				<a href="/support">
-					<span class="iconify lucide--help-circle size-4.5" />
-					<span>Support</span>
 				</a>
 			</li>
 			<div class="divider my-1"></div>

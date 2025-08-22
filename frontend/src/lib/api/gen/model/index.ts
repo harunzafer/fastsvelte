@@ -48,6 +48,7 @@ export * from './signupRequestFirstName';
 export * from './signupRequestLastName';
 export * from './signupSuccess';
 export * from './statsResponse';
+export * from './updateAvatarRequest';
 export * from './updateNoteRequest';
 export * from './updateNoteRequestContent';
 export * from './updateNoteRequestTitle';

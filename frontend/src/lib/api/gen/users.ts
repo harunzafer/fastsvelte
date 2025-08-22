@@ -5,6 +5,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type {
+  UpdateAvatarRequest,
   UpdateUserRequest,
   UserResponse,
   UserStatus,
@@ -52,6 +53,19 @@ export const updateUserInfo = (
       );
     }
   /**
+ * @summary Update User Avatar
+ */
+export const updateUserAvatar = (
+    updateAvatarRequest: UpdateAvatarRequest,
+ ) => {
+      return axiosInstance<unknown>(
+      {url: `/users/me/avatar`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: updateAvatarRequest
+    },
+      );
+    }
+  /**
  * @summary List Users
  */
 export const listUsers = (
@@ -65,4 +79,5 @@ export const listUsers = (
   export type GetCurrentUserResult = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>
 export type GetUserStatusResult = NonNullable<Awaited<ReturnType<typeof getUserStatus>>>
 export type UpdateUserInfoResult = NonNullable<Awaited<ReturnType<typeof updateUserInfo>>>
+export type UpdateUserAvatarResult = NonNullable<Awaited<ReturnType<typeof updateUserAvatar>>>
 export type ListUsersResult = NonNullable<Awaited<ReturnType<typeof listUsers>>>

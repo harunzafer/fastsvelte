@@ -16,3 +16,6 @@ class UserService:
 
     async def get_user_by_id(self, user_id: int) -> User | None:
         return await self.user_repo.get_user_by_id(user_id)
+
+    async def update_user_avatar(self, user_id: int, avatar_data: str) -> None:
+        await self.user_repo.update_user_avatar(user_id, avatar_data)

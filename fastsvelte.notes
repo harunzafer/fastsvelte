@@ -38,7 +38,6 @@ Web arayuzu ile backend'i de test ederek ve yeni seyler ekleyerek gidecegiz
 
 
 
-
 Brokerguard login'de kucuk bir problem olabilir incelememiz lazim
 
   - Sanirim hatayi catch edip goto yapamiyoruz checkAuth icinde

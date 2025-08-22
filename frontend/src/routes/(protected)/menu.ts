@@ -1,5 +1,7 @@
 import type { ISidebarMenuItem } from '$lib/components/admin-layout/SidebarMenuItem.svelte';
 import { APP_MODE } from '$lib/config/constants';
+import type { UserWithRole } from '$lib/api/gen/model/userWithRole';
+import { hasRequiredRole } from '$lib/auth/permissions';
 
 export const adminMenuItems: ISidebarMenuItem[] = [
 	{
@@ -14,13 +16,6 @@ export const adminMenuItems: ISidebarMenuItem[] = [
 		icon: 'lucide--user',
 		label: 'Profile',
 		url: '/profile',
-		minRole: 'readonly'
-	},
-	{
-		id: 'my_profile',
-		icon: 'lucide--user',
-		label: 'My Profile',
-		url: '/profile/my',
 		minRole: 'readonly'
 	},
 	{
@@ -111,10 +106,37 @@ export const adminMenuItems: ISidebarMenuItem[] = [
 	}
 ];
 
-// Filter out org-related menu items when in B2C mode
-export const getMenuItems = (): ISidebarMenuItem[] => {
+/**
+ * Filter menu items based on user role
+ */
+function filterMenuByRole(
+	items: ISidebarMenuItem[],
+	user: UserWithRole | null
+): ISidebarMenuItem[] {
+	return items.filter((item) => {
+		// Check if user has required role for this item
+		if (!hasRequiredRole(user, item.minRole)) {
+			return false;
+		}
+
+		// Recursively filter children
+		if (item.children) {
+			item.children = filterMenuByRole(item.children, user);
+			// Only show parent if it has visible children or its own URL
+			return item.children.length > 0 || item.url;
+		}
+
+		return true;
+	});
+}
+
+// Filter out org-related menu items when in B2C mode and apply role filtering
+export const getMenuItems = (user?: UserWithRole | null): ISidebarMenuItem[] => {
+	let items = adminMenuItems;
+
+	// Filter by app mode (B2C vs B2B)
 	if (APP_MODE === 'b2c') {
-		return adminMenuItems.filter(
+		items = items.filter(
 			(item) =>
 				![
 					'org_admin',
@@ -126,5 +148,11 @@ export const getMenuItems = (): ISidebarMenuItem[] => {
 				].includes(item.id)
 		);
 	}
-	return adminMenuItems;
+
+	// Filter by user role
+	if (user) {
+		items = filterMenuByRole(items, user);
+	}
+
+	return items;
 };
