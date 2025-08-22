@@ -88,7 +88,7 @@ class SubscriptionService:
 
         return self.stripe_service.create_portal_session(
             customer_id,
-            return_url=f"{settings.base_web_url}/dashboard",
+            return_url=f"{settings.base_web_url}{settings.stripe_portal_return_url}",
         )
 
     async def provision_free_subscription_if_needed(
