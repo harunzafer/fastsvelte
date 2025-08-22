@@ -3,9 +3,9 @@ from app.config.container import Container
 from app.model.role_model import Role
 from app.model.user_model import (
     CurrentUser,
+    SystemAdminUserResponse,
     UpdateAvatarRequest,
     UpdateUserRequest,
-    UserResponse,
     UserStatus,
     UserWithRole,
 )
@@ -58,11 +58,33 @@ async def update_user_avatar(
     return {"success": True}
 
 
-@router.get("/", response_model=list[UserResponse], operation_id="listUsers")
+@router.get("/", response_model=list[SystemAdminUserResponse], operation_id="listUsers")
 @inject
 async def list_users(
     user: CurrentUser = Depends(min_role_required(Role.SYSTEM_ADMIN)),
     user_service: UserService = Depends(Provide[Container.user_service]),
 ):
     users = await user_service.list_users()
-    return [UserResponse.model_validate(u.model_dump()) for u in users]
+    return [SystemAdminUserResponse.model_validate(u.model_dump()) for u in users]
+
+
+@router.post("/{user_id}/suspend", operation_id="suspendUser")
+@inject
+async def suspend_user(
+    user_id: int,
+    admin_user: CurrentUser = Depends(min_role_required(Role.SYSTEM_ADMIN)),
+    user_service: UserService = Depends(Provide[Container.user_service]),
+):
+    await user_service.suspend_user(user_id)
+    return {"success": True}
+
+
+@router.post("/{user_id}/activate", operation_id="activateUser")
+@inject
+async def activate_user(
+    user_id: int,
+    admin_user: CurrentUser = Depends(min_role_required(Role.SYSTEM_ADMIN)),
+    user_service: UserService = Depends(Provide[Container.user_service]),
+):
+    await user_service.activate_user(user_id)
+    return {"success": True}

@@ -1,11 +1,9 @@
 ---[ fastsvelte.dev ]----------------------------------------------------
 
-- Update ChatGPT and Claude project files
-- Start with Frontend
+- two separate DB's with different seed data.
+  - one for b2c, one for b2b
 
-Web arayuzu ile backend'i de test ederek ve yeni seyler ekleyerek gidecegiz
-  - admin tools
-
+- 
 
 
 ---[ Backlog ]--------------------------------------------------------

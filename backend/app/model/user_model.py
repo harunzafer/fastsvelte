@@ -64,6 +64,20 @@ class UserResponse(BaseModel):
     last_name: Optional[str]
 
 
+class SystemAdminUserResponse(BaseModel):
+    id: int
+    email: EmailStr
+    first_name: str
+    last_name: str
+    avatar_url: Optional[str] = None
+    is_active: bool
+    email_verified: bool
+    organization_id: int
+    role_id: Optional[int]
+    created_at: datetime
+    updated_at: datetime
+
+
 class CreateUserRequest(BaseModel):
     email: EmailStr
     password: str

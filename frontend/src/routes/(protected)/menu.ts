@@ -67,7 +67,7 @@ export const adminMenuItems: ISidebarMenuItem[] = [
 			{
 				id: 'org-users-list',
 				label: 'All Users',
-				url: '/admin/users'
+				url: '/org/users'
 			},
 			{
 				id: 'org-invitations',
@@ -95,6 +95,13 @@ export const adminMenuItems: ISidebarMenuItem[] = [
 		id: 'system',
 		isTitle: true,
 		label: 'System',
+		minRole: 'sys_admin'
+	},
+	{
+		id: 'system-users',
+		icon: 'lucide--users-cog',
+		label: 'System Users',
+		url: '/admin/users',
 		minRole: 'sys_admin'
 	},
 	{
