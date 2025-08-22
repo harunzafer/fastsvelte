@@ -46,3 +46,8 @@ class OrganizationSettingWithDefinition(OrganizationSetting):
     key: str
     type: SettingType
     description: Optional[str]
+
+
+class UpdateSettingRequest(BaseModel):
+    key: str
+    value: str

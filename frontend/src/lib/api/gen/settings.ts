@@ -5,7 +5,9 @@
  * OpenAPI spec version: 0.1.0
  */
 import type {
-  UpdateSettingRequest
+  OrganizationSettingWithDefinition,
+  UpdateSettingRequest,
+  UserSettingWithDefinition
 } from './model';
 
 import { axiosInstance } from '../axios';
@@ -19,7 +21,7 @@ import { axiosInstance } from '../axios';
 export const getUserSettings = (
     userId: number,
  ) => {
-      return axiosInstance<unknown>(
+      return axiosInstance<UserSettingWithDefinition[]>(
       {url: `/settings/user/${userId}`, method: 'GET'
     },
       );
@@ -31,7 +33,7 @@ export const setUserSetting = (
     userId: number,
     updateSettingRequest: UpdateSettingRequest,
  ) => {
-      return axiosInstance<unknown>(
+      return axiosInstance<UserSettingWithDefinition>(
       {url: `/settings/user/${userId}`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: updateSettingRequest
@@ -44,7 +46,7 @@ export const setUserSetting = (
 export const getOrganizationSettings = (
     organizationId: number,
  ) => {
-      return axiosInstance<unknown>(
+      return axiosInstance<OrganizationSettingWithDefinition[]>(
       {url: `/settings/organization/${organizationId}`, method: 'GET'
     },
       );
@@ -56,7 +58,7 @@ export const setOrganizationSetting = (
     organizationId: number,
     updateSettingRequest: UpdateSettingRequest,
  ) => {
-      return axiosInstance<unknown>(
+      return axiosInstance<OrganizationSettingWithDefinition>(
       {url: `/settings/organization/${organizationId}`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: updateSettingRequest
