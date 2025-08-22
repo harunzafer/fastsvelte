@@ -168,14 +168,14 @@
 <div class="container mx-auto max-w-4xl p-6">
 	<div class="mb-8">
 		<h1 class="text-3xl font-bold">Profile Settings</h1>
-		<p class="text-base-content/70 mt-2 flex items-center gap-2">
+		<div class="text-base-content/70 mt-2 flex items-center gap-2">
 			{#if authStore.user}
 				<span>{authStore.user.first_name} {authStore.user.last_name} • {authStore.user.email}</span>
 				<div class="badge badge-outline badge-sm">{authStore.user.role?.name || 'Member'}</div>
 			{:else}
 				<span>Manage your account information and preferences</span>
 			{/if}
-		</p>
+		</div>
 	</div>
 
 	<div class="grid gap-8 lg:grid-cols-3">
@@ -185,9 +185,11 @@
 				<div class="card-body items-center text-center">
 					<h2 class="card-title">Profile Picture</h2>
 
-					<div
+					<button
+						type="button"
 						class="avatar group relative size-32 cursor-pointer overflow-hidden rounded-full"
 						onclick={showModal}
+						aria-label="Change profile picture"
 					>
 						<div class="bg-base-200 p-1">
 							{#if authStore.user?.avatar_url}
@@ -205,7 +207,7 @@
 						>
 							Edit
 						</div>
-					</div>
+					</button>
 
 					<p class="text-base-content/70 text-sm">Click to change your profile picture</p>
 				</div>
@@ -296,9 +298,9 @@
 										placeholder="Enter new password"
 										required
 									/>
-									<label class="label">
+									<div class="label">
 										<span class="label-text-alt">Minimum 8 characters</span>
-									</label>
+									</div>
 								</div>
 
 								<div class="form-control">
@@ -362,7 +364,7 @@
 		<div class="flex items-center justify-between">
 			<h3 class="text-lg font-bold">Change Profile Picture</h3>
 			<form method="dialog">
-				<button class="btn btn-ghost btn-sm btn-circle">
+				<button class="btn btn-ghost btn-sm btn-circle" aria-label="Close modal">
 					<span class="iconify lucide--x size-4"></span>
 				</button>
 			</form>
@@ -380,9 +382,9 @@
 					class="file-input file-input-bordered"
 					onchange={handleAvatarFileChange}
 				/>
-				<label class="label">
+				<div class="label">
 					<span class="label-text-alt">JPEG, PNG, or WebP • Max 2MB</span>
-				</label>
+				</div>
 			</div>
 
 			{#if avatarFile}

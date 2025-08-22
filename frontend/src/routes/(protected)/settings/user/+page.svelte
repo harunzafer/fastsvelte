@@ -152,7 +152,7 @@
 				<div class="grid grid-cols-1 gap-5 xl:grid-cols-5">
 					<div class="xl:col-span-2">
 						<div class="flex items-center gap-2">
-							<span class="iconify lucide--monitor size-4" />
+							<span class="iconify lucide--monitor size-4"></span>
 							<p class="font-medium">Theme</p>
 						</div>
 						<p class="text-base-content/60 text-sm">Choose your preferred color theme</p>
@@ -184,7 +184,7 @@
 				<div class="grid grid-cols-1 gap-5 xl:grid-cols-5">
 					<div class="xl:col-span-2">
 						<div class="flex items-center gap-2">
-							<span class="iconify lucide--mail size-4" />
+							<span class="iconify lucide--mail size-4"></span>
 							<p class="font-medium">Email Notifications</p>
 						</div>
 						<p class="text-base-content/60 text-sm">Receive important updates via email</p>
