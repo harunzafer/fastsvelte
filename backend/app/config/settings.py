@@ -33,6 +33,7 @@ class Settings(BaseSettings):
     openai_api_key: str = None  # Should be set in .env
     stripe_api_key: str
     stripe_webhook_secret: str
+    stripe_portal_return_url: str = "/billing"  # Return URL after Stripe portal session
     invitation_expiry_days: int = 7
     google_client_id: str
     google_client_secret: str

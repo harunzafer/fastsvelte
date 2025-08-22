@@ -68,7 +68,7 @@
 		: undefined}
 >
 	<div class="flex h-16 min-h-16 items-center justify-between gap-3 ps-5 pe-4">
-		<a href="/dashboards/ecommerce">
+		<a href="/">
 			<Logo />
 		</a>
 		<!-- Toggle button to auto hide the sidebar. Disabled by default-->

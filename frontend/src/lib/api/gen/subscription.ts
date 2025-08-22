@@ -5,7 +5,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type {
-  ManageSubscription200
+  PortalSessionResponse
 } from './model';
 
 import { axiosInstance } from '../axios';
@@ -19,7 +19,7 @@ import { axiosInstance } from '../axios';
 export const manageSubscription = (
     
  ) => {
-      return axiosInstance<ManageSubscription200>(
+      return axiosInstance<PortalSessionResponse>(
       {url: `/subscription/manage`, method: 'POST'
     },
       );

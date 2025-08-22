@@ -1,6 +1,7 @@
 from app.api.middleware.auth_handler import min_role_required
 from app.config.container import Container
 from app.model.role_model import Role
+from app.model.subscription_model import PortalSessionResponse
 from app.model.user_model import CurrentUser
 from app.service.subscription_service import SubscriptionService
 from dependency_injector.wiring import Provide, inject
@@ -16,9 +17,9 @@ async def create_portal_session(
     subscription_service: SubscriptionService = Depends(
         Provide[Container.subscription_service]
     ),
-) -> dict:
+) -> PortalSessionResponse:
     url = await subscription_service.get_portal_url_for_org(user.organization_id)
-    return {"url": url}
+    return PortalSessionResponse(url=url)
 
 
 # @router.post("/start_checkout", operation_id="startCheckout")

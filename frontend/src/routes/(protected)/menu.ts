@@ -24,6 +24,13 @@ export const adminMenuItems: ISidebarMenuItem[] = [
 		minRole: 'readonly'
 	},
 	{
+		id: 'billing',
+		icon: 'lucide--credit-card',
+		label: 'Billing',
+		url: '/billing',
+		minRole: 'member'
+	},
+	{
 		id: 'org_admin',
 		icon: 'lucide--user',
 		label: 'Org Admin Tools',

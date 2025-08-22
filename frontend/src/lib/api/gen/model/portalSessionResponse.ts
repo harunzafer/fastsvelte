@@ -5,4 +5,6 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type ManageSubscription200 = { [key: string]: unknown };
+export interface PortalSessionResponse {
+  url: string;
+}
