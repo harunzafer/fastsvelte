@@ -3,7 +3,7 @@ from typing import Optional
 
 from app.model.role_model import Role
 from app.model.session_model import Session
-from pydantic import BaseModel, EmailStr, model_validator
+from pydantic import BaseModel, EmailStr, Field, model_validator
 
 
 class User(BaseModel):
@@ -98,4 +98,32 @@ class UpdateUserRequest(BaseModel):
                     raise ValueError(f"{field_name} must be at least 2 characters long")
                 setattr(self, field_name, value)
 
+        return self
+
+
+class UpdateAvatarRequest(BaseModel):
+    avatar_data: str = Field(..., description="Base64 encoded image data with data URL prefix")
+    
+    @model_validator(mode="after") 
+    def validate_avatar(self) -> "UpdateAvatarRequest":
+        if not self.avatar_data.startswith('data:image/'):
+            raise ValueError("Avatar must be a valid image data URL")
+        
+        # Extract base64 part and check size
+        try:
+            header, data = self.avatar_data.split(',', 1)
+            import base64
+            decoded = base64.b64decode(data)
+            
+            # 2MB limit
+            if len(decoded) > 2 * 1024 * 1024:
+                raise ValueError("Avatar image must be smaller than 2MB")
+                
+            # Check if it's a valid image format
+            if not any(fmt in header.lower() for fmt in ['jpeg', 'jpg', 'png', 'webp']):
+                raise ValueError("Avatar must be JPEG, PNG, or WebP format")
+                
+        except Exception as e:
+            raise ValueError(f"Invalid image data: {str(e)}")
+            
         return self

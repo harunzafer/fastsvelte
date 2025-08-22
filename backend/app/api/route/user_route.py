@@ -3,6 +3,7 @@ from app.config.container import Container
 from app.model.role_model import Role
 from app.model.user_model import (
     CurrentUser,
+    UpdateAvatarRequest,
     UpdateUserRequest,
     UserResponse,
     UserStatus,
@@ -43,6 +44,17 @@ async def update_user_info(
     user_service: UserService = Depends(Provide[Container.user_service]),
 ):
     await user_service.update_user_info(user.id, request.first_name, request.last_name)
+    return {"success": True}
+
+
+@router.post("/me/avatar", operation_id="updateUserAvatar")
+@inject
+async def update_user_avatar(
+    request: UpdateAvatarRequest,
+    user: CurrentUser = Depends(min_role_required(Role.MEMBER)),
+    user_service: UserService = Depends(Provide[Container.user_service]),
+):
+    await user_service.update_user_avatar(user.id, request.avatar_data)
     return {"success": True}
 
 

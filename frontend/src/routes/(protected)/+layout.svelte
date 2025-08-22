@@ -24,7 +24,7 @@
 	<!-- Authenticated content -->
 	<div class="size-full">
 		<div class="flex">
-			<Sidebar menuItems={getMenuItems()} />
+			<Sidebar menuItems={getMenuItems(authStore.user)} />
 			<div class="flex h-screen min-w-0 grow flex-col overflow-auto">
 				<Topbar />
 				<div id="layout-content">{@render children()}</div>

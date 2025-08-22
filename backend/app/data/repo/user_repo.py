@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 class UserRepo(BaseRepo):
     async def get_user_by_id(self, user_id: int) -> Optional[User]:
         query = """
-            SELECT id, email, first_name, last_name,
+            SELECT id, email, first_name, last_name, avatar_url,
                 email_verified, email_verified_at,
                 is_active, deleted_at,
                 organization_id, role_id,
@@ -25,7 +25,7 @@ class UserRepo(BaseRepo):
     async def list_users(self) -> list[User]:
         query = """
             SELECT
-                id, email, first_name, last_name,
+                id, email, first_name, last_name, avatar_url,
                 email_verified, email_verified_at,
                 is_active, deleted_at,
                 organization_id, role_id,
@@ -41,7 +41,7 @@ class UserRepo(BaseRepo):
     ) -> Optional[UserWithPassword]:
         query = """
             SELECT
-                id, email, password_hash, first_name, last_name,
+                id, email, password_hash, first_name, last_name, avatar_url,
                 email_verified, email_verified_at,
                 is_active, deleted_at,
                 organization_id, role_id,
@@ -120,7 +120,7 @@ class UserRepo(BaseRepo):
     async def get_user_with_role_by_id(self, user_id: int) -> Optional[UserWithRole]:
         query = """
             SELECT
-                u.id, u.email, u.first_name, u.last_name,
+                u.id, u.email, u.first_name, u.last_name, u.avatar_url,
                 u.email_verified, u.email_verified_at,
                 u.is_active, u.deleted_at,
                 u.organization_id, u.role_id,
@@ -141,7 +141,7 @@ class UserRepo(BaseRepo):
 
     async def get_user_by_email(self, email: str) -> User | None:
         query = """
-            SELECT id, email, first_name, last_name, organization_id, is_active, deleted_at,
+            SELECT id, email, first_name, last_name, avatar_url, organization_id, is_active, deleted_at,
                 created_at, updated_at, role_id
             FROM fastsvelte."user"
             WHERE email = $1
@@ -220,3 +220,18 @@ class UserRepo(BaseRepo):
         result = await self.execute(query, user_id, avatar_url)
         # Returns True if a row was updated (avatar was NULL), False if no update (avatar already exists)
         return result.split()[-1] == "1" if result else False
+
+    async def update_user_avatar(self, user_id: int, avatar_data: str) -> None:
+        """
+        Update user's avatar with base64 image data.
+        
+        Args:
+            user_id: User ID to update
+            avatar_data: Base64 data URL (e.g., "data:image/jpeg;base64,...")
+        """
+        query = """
+            UPDATE fastsvelte."user"
+            SET avatar_url = $2, updated_at = NOW()
+            WHERE id = $1 AND deleted_at IS NULL
+        """
+        await self.execute(query, user_id, avatar_data)
