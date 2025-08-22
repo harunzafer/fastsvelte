@@ -287,9 +287,9 @@
 						placeholder="Enter note title"
 					/>
 					{#if formErrors.title}
-						<label class="label">
+						<div class="label">
 							<span class="label-text-alt text-error">{formErrors.title}</span>
-						</label>
+						</div>
 					{/if}
 				</div>
 
@@ -305,9 +305,9 @@
 						placeholder="Enter note content"
 					></textarea>
 					{#if formErrors.content}
-						<label class="label">
+						<div class="label">
 							<span class="label-text-alt text-error">{formErrors.content}</span>
-						</label>
+						</div>
 					{/if}
 				</div>
 
