@@ -5,4 +5,4 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type UserResponseLastName = string | null;
+export type SystemAdminUserResponseRoleId = number | null;

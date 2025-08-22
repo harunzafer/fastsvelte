@@ -19,3 +19,9 @@ class UserService:
 
     async def update_user_avatar(self, user_id: int, avatar_data: str) -> None:
         await self.user_repo.update_user_avatar(user_id, avatar_data)
+
+    async def suspend_user(self, user_id: int) -> None:
+        await self.user_repo.update_user_status(user_id, is_active=False)
+
+    async def activate_user(self, user_id: int) -> None:
+        await self.user_repo.update_user_status(user_id, is_active=True)

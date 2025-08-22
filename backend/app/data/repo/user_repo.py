@@ -235,3 +235,18 @@ class UserRepo(BaseRepo):
             WHERE id = $1 AND deleted_at IS NULL
         """
         await self.execute(query, user_id, avatar_data)
+
+    async def update_user_status(self, user_id: int, is_active: bool) -> None:
+        """
+        Update user's active status (for suspend/activate functionality).
+        
+        Args:
+            user_id: User ID to update
+            is_active: True to activate, False to suspend
+        """
+        query = """
+            UPDATE fastsvelte."user"
+            SET is_active = $2, updated_at = NOW()
+            WHERE id = $1 AND deleted_at IS NULL
+        """
+        await self.execute(query, user_id, is_active)

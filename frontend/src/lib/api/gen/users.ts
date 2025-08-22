@@ -5,9 +5,9 @@
  * OpenAPI spec version: 0.1.0
  */
 import type {
+  SystemAdminUserResponse,
   UpdateAvatarRequest,
   UpdateUserRequest,
-  UserResponse,
   UserStatus,
   UserWithRole
 } from './model';
@@ -71,8 +71,30 @@ export const updateUserAvatar = (
 export const listUsers = (
     
  ) => {
-      return axiosInstance<UserResponse[]>(
+      return axiosInstance<SystemAdminUserResponse[]>(
       {url: `/users/`, method: 'GET'
+    },
+      );
+    }
+  /**
+ * @summary Suspend User
+ */
+export const suspendUser = (
+    userId: number,
+ ) => {
+      return axiosInstance<unknown>(
+      {url: `/users/${userId}/suspend`, method: 'POST'
+    },
+      );
+    }
+  /**
+ * @summary Activate User
+ */
+export const activateUser = (
+    userId: number,
+ ) => {
+      return axiosInstance<unknown>(
+      {url: `/users/${userId}/activate`, method: 'POST'
     },
       );
     }
@@ -81,3 +103,5 @@ export type GetUserStatusResult = NonNullable<Awaited<ReturnType<typeof getUserS
 export type UpdateUserInfoResult = NonNullable<Awaited<ReturnType<typeof updateUserInfo>>>
 export type UpdateUserAvatarResult = NonNullable<Awaited<ReturnType<typeof updateUserAvatar>>>
 export type ListUsersResult = NonNullable<Awaited<ReturnType<typeof listUsers>>>
+export type SuspendUserResult = NonNullable<Awaited<ReturnType<typeof suspendUser>>>
+export type ActivateUserResult = NonNullable<Awaited<ReturnType<typeof activateUser>>>
