@@ -122,9 +122,9 @@
 		try {
 			const response = await getUserSettings(authStore.user!.id);
 			const settings = response.data;
-			
+
 			// Find the theme setting
-			const themeSetting = settings.find(s => s.key === 'theme');
+			const themeSetting = settings.find((s) => s.key === 'theme');
 			if (themeSetting) {
 				// Map user setting to config theme
 				const configTheme = mapUserThemeToConfig(themeSetting.value);

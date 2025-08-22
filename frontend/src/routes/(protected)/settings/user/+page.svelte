@@ -21,7 +21,9 @@
 	let originalNotificationsEnabled = $state(false);
 
 	// Track if there are unsaved changes
-	const hasChanges = $derived(theme !== originalTheme || notificationsEnabled !== originalNotificationsEnabled);
+	const hasChanges = $derived(
+		theme !== originalTheme || notificationsEnabled !== originalNotificationsEnabled
+	);
 
 	// Theme configuration
 	const { changeTheme } = useConfig();
@@ -34,25 +36,28 @@
 
 	onMount(async () => {
 		if (!authStore.user?.id) return;
-		
+
 		try {
 			const response = await getUserSettings(authStore.user.id);
 			settings = response.data;
-			
+
 			// Convert to map for easy access
-			settingsMap = settings.reduce((acc, setting) => {
-				acc[setting.key] = setting;
-				return acc;
-			}, {} as Record<string, UserSettingWithDefinition>);
-			
+			settingsMap = settings.reduce(
+				(acc, setting) => {
+					acc[setting.key] = setting;
+					return acc;
+				},
+				{} as Record<string, UserSettingWithDefinition>
+			);
+
 			// Set form values from existing settings
 			theme = settingsMap.theme?.value || 'light';
 			notificationsEnabled = settingsMap.notifications_enabled?.value === 'true';
-			
+
 			// Store original values for comparison
 			originalTheme = theme;
 			originalNotificationsEnabled = notificationsEnabled;
-			
+
 			// Apply the initial theme from user settings
 			applyThemeChange(theme);
 		} catch (err) {
@@ -72,9 +77,9 @@
 		try {
 			// Save theme if changed
 			if (theme !== originalTheme) {
-				const themeResponse = await setUserSetting(authStore.user.id, { 
-					key: 'theme', 
-					value: theme 
+				const themeResponse = await setUserSetting(authStore.user.id, {
+					key: 'theme',
+					value: theme
 				});
 				settingsMap.theme = themeResponse.data;
 				originalTheme = theme;
@@ -84,14 +89,14 @@
 
 			// Save notifications if changed
 			if (notificationsEnabled !== originalNotificationsEnabled) {
-				const notifResponse = await setUserSetting(authStore.user.id, { 
-					key: 'notifications_enabled', 
-					value: notificationsEnabled.toString() 
+				const notifResponse = await setUserSetting(authStore.user.id, {
+					key: 'notifications_enabled',
+					value: notificationsEnabled.toString()
 				});
 				settingsMap.notifications_enabled = notifResponse.data;
 				originalNotificationsEnabled = notificationsEnabled;
 			}
-			
+
 			// Show success feedback briefly
 			// TODO: Add toast notification
 		} catch (err) {
@@ -114,10 +119,14 @@
 					<p class="text-sm">User Preferences</p>
 				</div>
 				<p class="text-primary mt-4 text-xl font-medium">My Settings</p>
-				<p class="text-base-content/80">Configure your personal preferences and account settings.</p>
+				<p class="text-base-content/80">
+					Configure your personal preferences and account settings.
+				</p>
 			</div>
 		</div>
-		<span class="iconify lucide--settings text-primary/5 absolute start-1/2 -bottom-12 size-44 -rotate-25"></span>
+		<span
+			class="iconify lucide--settings text-primary/5 absolute start-1/2 -bottom-12 size-44 -rotate-25"
+		></span>
 	</div>
 
 	{#if error}
@@ -135,11 +144,11 @@
 		<!-- Appearance Settings -->
 		<div class="card bg-base-100 card-border mb-6">
 			<div class="card-body">
-				<div class="flex items-center gap-2 mb-6">
+				<div class="mb-6 flex items-center gap-2">
 					<span class="iconify lucide--palette size-5"></span>
 					<p class="text-lg font-medium">Appearance</p>
 				</div>
-				
+
 				<div class="grid grid-cols-1 gap-5 xl:grid-cols-5">
 					<div class="xl:col-span-2">
 						<div class="flex items-center gap-2">
@@ -150,11 +159,7 @@
 					</div>
 					<div class="xl:col-span-3">
 						<div class="space-y-2">
-							<select 
-								class="select w-full max-w-xs" 
-								bind:value={theme}
-								disabled={saving}
-							>
+							<select class="select w-full max-w-xs" bind:value={theme} disabled={saving}>
 								<option value="light">Light</option>
 								<option value="dark">Dark</option>
 								<option value="auto">Auto (System)</option>
@@ -171,11 +176,11 @@
 		<!-- Notification Settings -->
 		<div class="card bg-base-100 card-border mb-6">
 			<div class="card-body">
-				<div class="flex items-center gap-2 mb-6">
+				<div class="mb-6 flex items-center gap-2">
 					<span class="iconify lucide--bell size-5"></span>
 					<p class="text-lg font-medium">Notifications</p>
 				</div>
-				
+
 				<div class="grid grid-cols-1 gap-5 xl:grid-cols-5">
 					<div class="xl:col-span-2">
 						<div class="flex items-center gap-2">
@@ -186,10 +191,10 @@
 					</div>
 					<div class="xl:col-span-3">
 						<div class="space-y-2">
-							<label class="flex items-center gap-3 cursor-pointer">
-								<input 
-									type="checkbox" 
-									class="toggle toggle-primary" 
+							<label class="flex cursor-pointer items-center gap-3">
+								<input
+									type="checkbox"
+									class="toggle toggle-primary"
 									bind:checked={notificationsEnabled}
 									disabled={saving}
 								/>
@@ -198,7 +203,8 @@
 								</span>
 							</label>
 							<p class="text-base-content/60 text-xs">
-								Get notified about important account updates, security alerts, and feature announcements
+								Get notified about important account updates, security alerts, and feature
+								announcements
 							</p>
 						</div>
 					</div>
@@ -209,7 +215,7 @@
 		<!-- Save Changes Button -->
 		<div class="mb-6">
 			<div class="flex justify-end">
-				<button 
+				<button
 					class="btn btn-primary"
 					class:loading={saving}
 					disabled={!hasChanges || saving}
@@ -225,6 +231,5 @@
 				</button>
 			</div>
 		</div>
-
 	{/if}
 </div>
