@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import { listNotes, createNote, deleteNote } from '$lib/api/gen/notes';
 	import type { NoteResponse, CreateNoteRequest } from '$lib/api/gen/model';
-	import Alert from '$lib/components/Alert.svelte';
 
 	let notes = $state<NoteResponse[]>([]);
 	let filteredNotes = $state<NoteResponse[]>([]);
@@ -12,7 +12,7 @@
 	let deletingNote = $state<NoteResponse | null>(null);
 
 	// Form states
-	let createForm = $state({ title: '', content: '' });
+	let createForm = $state({ title: '' });
 	let formErrors = $state<Record<string, string>>({});
 	let submitting = $state(false);
 
@@ -52,7 +52,7 @@
 	}
 
 	function resetCreateForm() {
-		createForm = { title: '', content: '' };
+		createForm = { title: '' };
 		formErrors = {};
 	}
 
@@ -71,9 +71,16 @@
 
 		submitting = true;
 		try {
-			await createNote(createForm as CreateNoteRequest);
+			const response = await createNote({
+				title: createForm.title,
+				content: ''
+			} as CreateNoteRequest);
 			closeCreateModal();
-			await loadNotes();
+
+			// Navigate to the edit page for the newly created note
+			if (response.data?.id) {
+				goto(`/notes/${response.data.id}/edit`);
+			}
 		} catch (error) {
 			console.error('Failed to create note:', error);
 			formErrors.submit = 'Failed to create note. Please try again.';
@@ -102,14 +109,11 @@
 		}
 	}
 
-	function validateForm(form: { title: string; content: string }): boolean {
+	function validateForm(form: { title: string }): boolean {
 		formErrors = {};
 
 		if (!form.title.trim()) {
 			formErrors.title = 'Title is required';
-		}
-		if (!form.content.trim()) {
-			formErrors.content = 'Content is required';
 		}
 
 		return Object.keys(formErrors).length === 0;
@@ -289,24 +293,6 @@
 					{#if formErrors.title}
 						<div class="label">
 							<span class="label-text-alt text-error">{formErrors.title}</span>
-						</div>
-					{/if}
-				</div>
-
-				<div class="form-control mb-4">
-					<label class="label" for="create-content">
-						<span class="label-text">Content</span>
-					</label>
-					<textarea
-						id="create-content"
-						class="textarea textarea-bordered h-32"
-						class:textarea-error={formErrors.content}
-						bind:value={createForm.content}
-						placeholder="Enter note content"
-					></textarea>
-					{#if formErrors.content}
-						<div class="label">
-							<span class="label-text-alt text-error">{formErrors.content}</span>
 						</div>
 					{/if}
 				</div>
