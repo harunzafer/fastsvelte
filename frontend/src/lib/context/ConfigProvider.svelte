@@ -105,7 +105,36 @@
 </script>
 
 <script lang="ts">
+	import { getUserSettings } from '$lib/api/gen/settings';
+	import { authStore } from '$lib/auth/auth.svelte';
+	import { mapUserThemeToConfig } from '$lib/utils/theme';
+
 	let { children } = $props();
+
+	// Load user theme setting when authenticated
+	$effect(() => {
+		if (browser && authStore.isAuthenticated && authStore.user?.id) {
+			loadUserTheme();
+		}
+	});
+
+	async function loadUserTheme() {
+		try {
+			const response = await getUserSettings(authStore.user!.id);
+			const settings = response.data;
+
+			// Find the theme setting
+			const themeSetting = settings.find((s) => s.key === 'theme');
+			if (themeSetting) {
+				// Map user setting to config theme
+				const configTheme = mapUserThemeToConfig(themeSetting.value);
+				changeTheme(configTheme);
+			}
+		} catch (error) {
+			console.error('Failed to load user theme setting:', error);
+			// Continue with default theme on error
+		}
+	}
 
 	config.subscribe((config) => {
 		if (browser) {

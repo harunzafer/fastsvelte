@@ -3,20 +3,15 @@ from app.config.container import Container
 from app.exception.auth_exception import AccessDenied
 from app.exception.common_exception import ResourceNotFound
 from app.model.role_model import Role
+from app.model.setting_model import OrganizationSettingWithDefinition, UpdateSettingRequest, UserSettingWithDefinition
 from app.model.user_model import CurrentUser, User
 from app.service.setting_service import SettingService
 from app.service.user_service import UserService
 from app.util.permission_util import require_same_org_or_admin
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
 
 router = APIRouter()
-
-
-class UpdateSettingRequest(BaseModel):
-    key: str
-    value: str
 
 
 @router.get("/user/{user_id}", operation_id="getUserSettings")
@@ -26,7 +21,7 @@ async def get_user_settings(
     current_user: CurrentUser = Depends(min_role_required(Role.READONLY)),
     user_service: UserService = Depends(Provide[Container.user_service]),
     setting_service: SettingService = Depends(Provide[Container.setting_service]),
-):
+) -> list[UserSettingWithDefinition]:
     if user_id != current_user.id:
         target_user: User = await user_service.get_user_by_id(user_id)
         if not target_user:
@@ -44,7 +39,7 @@ async def set_user_setting(
     current_user: CurrentUser = Depends(min_role_required(Role.MEMBER)),
     user_service: UserService = Depends(Provide[Container.user_service]),
     setting_service: SettingService = Depends(Provide[Container.setting_service]),
-):
+) -> UserSettingWithDefinition:
     if user_id != current_user.id:
         target_user = await user_service.get_user_by_id(user_id)
         if not target_user:
@@ -60,7 +55,7 @@ async def get_org_settings(
     organization_id: int,
     current_user: CurrentUser = Depends(min_role_required(Role.ORG_ADMIN)),
     setting_service: SettingService = Depends(Provide[Container.setting_service]),
-):
+) -> list[OrganizationSettingWithDefinition]:
     if (
         current_user.role != Role.SYSTEM_ADMIN
         and organization_id != current_user.organization_id
@@ -77,7 +72,7 @@ async def set_org_setting(
     req: UpdateSettingRequest,
     current_user: CurrentUser = Depends(min_role_required(Role.ORG_ADMIN)),
     setting_service: SettingService = Depends(Provide[Container.setting_service]),
-):
+) -> OrganizationSettingWithDefinition:
     if (
         current_user.role != Role.SYSTEM_ADMIN
         and organization_id != current_user.organization_id

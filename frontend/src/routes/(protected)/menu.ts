@@ -52,7 +52,7 @@ export const adminMenuItems: ISidebarMenuItem[] = [
 		children: [
 			{
 				id: 'settings-user',
-				label: 'My Settings',
+				label: 'User Preferences',
 				url: '/settings/user',
 				minRole: 'readonly'
 			}

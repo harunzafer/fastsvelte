@@ -5,9 +5,9 @@ from app.data.repo.setting_repo import SettingRepo
 from app.data.repo.user_setting_repo import UserSettingRepo
 from app.exception.setting_exception import InvalidSettingValue, UnknownSettingKey
 from app.model.setting_model import (
-    OrganizationSetting,
+    OrganizationSettingWithDefinition,
     SettingType,
-    UserSetting,
+    UserSettingWithDefinition,
 )
 
 
@@ -41,7 +41,7 @@ class SettingService:
 
     async def set_user_setting_by_key(
         self, user_id: int, key: str, value: str
-    ) -> UserSetting:
+    ) -> UserSettingWithDefinition:
         definition = await self.setting_repo.get_user_setting_definition(key)
         if not definition:
             raise UnknownSettingKey("user", key)
@@ -52,7 +52,7 @@ class SettingService:
 
     async def set_organization_setting_by_key(
         self, org_id: int, key: str, value: str
-    ) -> OrganizationSetting:
+    ) -> OrganizationSettingWithDefinition:
         definition = await self.setting_repo.get_org_setting_definition(key)
         if not definition:
             raise UnknownSettingKey("organization", key)
@@ -61,12 +61,12 @@ class SettingService:
             org_id, definition.id, value
         )
 
-    async def list_user_settings(self, user_id: int) -> list[UserSetting]:
+    async def list_user_settings(self, user_id: int) -> list[UserSettingWithDefinition]:
         return await self.user_setting_repo.list_user_settings(user_id)
 
     async def list_organization_settings(
         self, organization_id: int
-    ) -> list[OrganizationSetting]:
+    ) -> list[OrganizationSettingWithDefinition]:
         return await self.organization_setting_repo.list_organization_settings(
             organization_id
         )
